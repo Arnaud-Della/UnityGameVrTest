@@ -33,6 +33,8 @@ public class AvatarFactory : MonoBehaviour
 
     private List<AvatarConfigurationLoad> avatarConfigurationLoads;
     private bool IsMine = true;
+    private GameObject MyAvatar;
+    private int MyViewID;
 
     private void Start()
     {
@@ -44,9 +46,10 @@ public class AvatarFactory : MonoBehaviour
         network.SomethingHappened += this.HandleEvent;
     }
 
-    public void HandleEvent(object sender, EventArgs args)
+    public void HandleEvent(object sender, EventPlayer args)
     {
         Debug.LogWarning("Un nouveau joueur vient d'arriver => event");
+        photonView.RPC("Sync", args.player, MyViewID, Vector3.zero, avatarURL);
     }
 
     public void CreateNewAvatar(string url, Vector3 position)
@@ -169,7 +172,9 @@ public class AvatarFactory : MonoBehaviour
             VRRigScript.rightHand = VRMapRightHand;
             VRRigScript.turnSmoothness = 3;
             IsMine = !IsMine;
-            photonView.RPC("Sync", RpcTarget.Others, AvatarPhotonView.ViewID, new Vector3(0, 0, 0), avatarURL);
+            MyAvatar = avatar;
+            MyViewID = AvatarPhotonView.ViewID;
+            photonView.RPC("Sync", RpcTarget.Others, MyViewID, new Vector3(0, 0, 0), avatarURL);
         }
         else if (avatarConfigurationLoads.Count > 0)
         {
@@ -192,9 +197,6 @@ public class AvatarFactory : MonoBehaviour
         myAnimator.avatar = SqueletteAvatarAnimator;
         myAnimator.runtimeAnimatorController = ControllerAnimator;
         myRigBuilder.Build();
-        Debug.Log("bonjour avant");
-        
-        Debug.Log("bonjour apres");
     }
 
     private GameObject addNewNode(GameObject parentOb, string name)
@@ -234,7 +236,6 @@ public class AvatarFactory : MonoBehaviour
     [PunRPC]
     protected virtual void Sync(int ViewID, Vector3 position, string url)
     {
-        Debug.Log("bonjour rpc");
         avatarConfigurationLoads.Add(new AvatarConfigurationLoad(ViewID, position, url));
         CreateNewAvatar(url, position);
     }

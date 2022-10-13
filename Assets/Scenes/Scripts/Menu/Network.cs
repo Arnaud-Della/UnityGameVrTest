@@ -63,7 +63,7 @@ public class Network : MonoBehaviourPunCallbacks
     {
         Debug.Log("Un nouveau joueur vient de se connecter : ");
         Debug.Log("Il y a " + PhotonNetwork.CurrentRoom.PlayerCount + " joueurs dans la room");
-        Perturbation();
+        Perturbation(newPlayer);
     }
 
     #endregion
@@ -77,8 +77,17 @@ public class Network : MonoBehaviourPunCallbacks
         return PhotonNetwork.CurrentRoom.PlayerCount;
     }
 
-    public event EventHandler SomethingHappened;
+    public event EventHandler<EventPlayer> SomethingHappened;
 
-    public void Perturbation() =>
-        SomethingHappened?.Invoke(this, EventArgs.Empty);
+    public void Perturbation(Player player)
+    {
+        EventPlayer playersending = new EventPlayer();
+        playersending.player = player;
+        SomethingHappened?.Invoke(this, playersending);
+    }
+}
+
+public class EventPlayer :EventArgs
+{
+    public Player player;
 }
