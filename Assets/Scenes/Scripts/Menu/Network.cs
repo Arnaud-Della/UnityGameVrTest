@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class Network : MonoBehaviourPunCallbacks
 {
     private string RoomName = "default-room";
-    public string Url;
+    public string Url { get; set; }
 
     private void Awake()
     {
