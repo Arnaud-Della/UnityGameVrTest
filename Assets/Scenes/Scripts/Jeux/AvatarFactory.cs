@@ -145,7 +145,7 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
         photonTransformView.m_UseLocal = true;
         AvatarPhotonView.ObservedComponents = new List<Component>() { photonTransformView };
 
-        if (avatarConfigurationLoads.Count == 0 && IsMine)
+        if (IsMine)
         {
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
@@ -171,7 +171,7 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
             MyAvatar = avatar;
             photonView.RPC("Sync", RpcTarget.Others, MyIDAvatar, new Vector3(0, 0, 0), avatarURL);
         }
-        else if (avatarConfigurationLoads.Count > 0)
+        else
         {
             AvatarPhotonView.ViewID = avatarConfigurationLoads[0].ViewID;
             avatarConfigurationLoads.RemoveAt(0);
@@ -240,7 +240,7 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         Debug.Log("Un nouveau joueur !");
-        //photonView.RPC("Sync", newPlayer, MyIDAvatar, MyAvatar.transform.position, avatarURL);
+        photonView.RPC("Sync", newPlayer, MyIDAvatar, MyAvatar.transform.position, avatarURL);
     }
     #endregion
 }
