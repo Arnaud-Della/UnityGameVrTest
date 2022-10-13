@@ -239,7 +239,8 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
     #region Pun Callbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        photonView.RPC("Sync", newPlayer, MyIDAvatar, MyAvatar.transform.position, avatarURL);
+        Debug.Log("Un nouveau joueur !");
+        //photonView.RPC("Sync", newPlayer, MyIDAvatar, MyAvatar.transform.position, avatarURL);
     }
     #endregion
 }
