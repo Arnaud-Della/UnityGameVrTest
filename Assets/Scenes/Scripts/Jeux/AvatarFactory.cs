@@ -14,7 +14,7 @@ public class AvatarFactory : MonoBehaviour
     public Avatar SqueletteAvatarAnimator;
     public PhotonView photonView;
 
-    private List<Transform> HumanBones = new List<Transform>();
+    private List<Transform> HumanBones;
     private List<AvatarConfiguration> AvatarStampToCreate = new List<AvatarConfiguration>();
     private AvatarConfiguration MyAvatarConfiguration;
     private bool IsMyOwnAvatar = true;
@@ -96,7 +96,6 @@ public class AvatarFactory : MonoBehaviour
         targetDroit.transform.rotation = HumanBones[18].transform.rotation;
         hintDroit.transform.rotation = HumanBones[16].transform.rotation;
 
-
         // Bras Gauche
         twoBoneBrasGauche.enabled = true;
         twoBoneBrasGauche.data.root = HumanBones[13];
@@ -112,7 +111,6 @@ public class AvatarFactory : MonoBehaviour
         hintGauche.transform.position = HumanBones[15].transform.position;
         targetGauche.transform.rotation = HumanBones[17].transform.rotation;
         hintGauche.transform.rotation = HumanBones[15].transform.rotation;
-
 
         // Tete
         multiParentConstrainTeteContrainte.data.constrainedObject = HumanBones[10];
@@ -222,6 +220,7 @@ public class AvatarFactory : MonoBehaviour
 
     private Transform[] GetAllHumanoidBones(Animator _animator)
     {
+        HumanBones = new List<Transform>();
         if (_animator == null) return null;
 
         foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
