@@ -15,9 +15,6 @@ public class AvatarFactory : MonoBehaviour
     public Avatar SqueletteAvatarAnimator;
     private Network network;
     private Vector3 position;
-    private bool IsMine = true;
-    private PhotonView AvatarPhotonView;
-    private int ViewID;
 
     private PhotonView photonView;
     private void Start()
@@ -26,15 +23,6 @@ public class AvatarFactory : MonoBehaviour
         network = FindObjectOfType<Network>();
         avatarURL = network.Url;
         CreateNewAvatar(avatarURL, new Vector3(0,0,0));
-
-        photonView.RPC("CreateNewAvatarSync", RpcTarget.All, avatarURL, new Vector3(0, 0, 0),ViewID);
-    }
-
-    [PunRPC]
-    public void CreateNewAvatarSync(string url, Vector3 position,int ID)
-    {
-        string name = CreateNewAvatar(url, position);
-        GameObject.Find(name).GetComponent<PhotonView>().ViewID = ID;
     }
 
     public string CreateNewAvatar(string url, Vector3 position)
@@ -132,22 +120,14 @@ public class AvatarFactory : MonoBehaviour
         TeteContrainte.transform.position = HumanBones[10].transform.position;
         TeteContrainte.transform.rotation = HumanBones[10].transform.rotation;
 
-        AvatarPhotonView = avatar.AddComponent<PhotonView>();
-
-        if (IsMine)
-        {
-            Casque.transform.position = HumanBones[10].transform.position;
-            ManetteDroite.transform.position = HumanBones[18].transform.position;
-            ManetteGauche.transform.position = HumanBones[17].transform.position;
-            MoveScript moveScript = avatar.AddComponent<MoveScript>();
-            moveScript.speed = 1;
-            moveScript.Casque = Casque;
-            moveScript.ManetteDroite = ManetteDroite;
-            moveScript.ManetteGauche = ManetteGauche;
-            PhotonNetwork.AllocateViewID(AvatarPhotonView);
-            ViewID = AvatarPhotonView.ViewID;
-            IsMine = false;
-        }
+        Casque.transform.position = HumanBones[10].transform.position;
+        ManetteDroite.transform.position = HumanBones[18].transform.position;
+        ManetteGauche.transform.position = HumanBones[17].transform.position;
+        MoveScript moveScript = avatar.AddComponent<MoveScript>();
+        moveScript.speed = 1;
+        moveScript.Casque = Casque;
+        moveScript.ManetteDroite = ManetteDroite;
+        moveScript.ManetteGauche = ManetteGauche;
 
         multiParentConstraint.data.constrainedPositionXAxis = true;
         multiParentConstraint.data.constrainedPositionYAxis = true;
