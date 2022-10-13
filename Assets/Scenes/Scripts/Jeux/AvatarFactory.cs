@@ -145,7 +145,7 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
         photonTransformView.m_UseLocal = true;
         AvatarPhotonView.ObservedComponents = new List<Component>() { photonTransformView };
 
-        if (IsMine)
+        if (avatarConfigurationLoads.Count == 0 && IsMine)
         {
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
