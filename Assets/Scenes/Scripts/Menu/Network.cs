@@ -16,7 +16,11 @@ public class Network : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     public void Connection(string RoomName, string url)
     {
-        this.RoomName = RoomName;
+        if (RoomName != "")
+        {
+            this.RoomName = RoomName;
+        }
+            
         if (url != "")
         {
             this.Url = url;
@@ -67,8 +71,6 @@ public class Network : MonoBehaviourPunCallbacks
     {
         SceneManager.LoadScene("Room");
     }
-
-
     public int GetNbPlayer()
     {
         return PhotonNetwork.CurrentRoom.PlayerCount;
