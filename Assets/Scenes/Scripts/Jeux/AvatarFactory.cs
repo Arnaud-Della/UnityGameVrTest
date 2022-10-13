@@ -136,6 +136,10 @@ public class AvatarFactory : MonoBehaviour
 
         ///
         PhotonView AvatarPhotonView = avatar.AddComponent<PhotonView>();
+        PhotonTransformView photonTransformView = avatar.AddComponent<PhotonTransformView>();
+        photonTransformView.m_SynchronizePosition = true;
+        photonTransformView.m_SynchronizeRotation = true;
+        photonTransformView.m_UseLocal = true;
 
         if (avatarConfigurationLoads.Count == 0 && IsMine)
         {
