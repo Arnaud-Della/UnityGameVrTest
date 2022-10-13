@@ -220,7 +220,7 @@ public class AvatarFactory : MonoBehaviour
     }
 
     [PunRPC]
-    private void Sync(AvatarConfigurationLoad conf)
+    protected virtual void Sync(AvatarConfigurationLoad conf)
     {
         Debug.Log("bonjour rpc");
         /*avatarConfigurationLoads.Add(conf);
