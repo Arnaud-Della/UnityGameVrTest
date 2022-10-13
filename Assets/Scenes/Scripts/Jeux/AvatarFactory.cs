@@ -49,7 +49,7 @@ public class AvatarFactory : MonoBehaviour
     public void HandleEvent(object sender, EventPlayer args)
     {
         Debug.LogWarning("Un nouveau joueur vient d'arriver => event");
-        photonView.RPC("Sync", args.player, MyViewID, Vector3.zero, avatarURL);
+        photonView.RPC("Sync", args.player, MyViewID, MyAvatar.transform.position, avatarURL);
     }
 
     public void CreateNewAvatar(string url, Vector3 position)
