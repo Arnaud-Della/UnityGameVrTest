@@ -136,6 +136,7 @@ public class AvatarFactory : MonoBehaviour
         multiParentConstraint.data.constrainedRotationYAxis = true;
         multiParentConstraint.data.constrainedRotationZAxis = true;
 
+
         VRRig VRRigScript = avatar.AddComponent<VRRig>();
         VRRigScript.headConstraint = TeteContrainte.transform;
         VRMap VRMapLeftHand = new VRMap(ManetteGauche.transform, TargetGauche.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
