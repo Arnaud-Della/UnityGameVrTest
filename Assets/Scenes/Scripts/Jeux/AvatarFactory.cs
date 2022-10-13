@@ -27,7 +27,7 @@ public class AvatarFactory : MonoBehaviour
         avatarURL = network.Url;
         CreateNewAvatar(avatarURL, new Vector3(0,0,0));
 
-        photonView.RPC("CreateNewAvatarSync", RpcTarget.Others, avatarURL, new Vector3(0, 0, 0),ViewID);
+        photonView.RPC("CreateNewAvatarSync", RpcTarget.All, avatarURL, new Vector3(0, 0, 0),ViewID);
     }
 
     [PunRPC]
