@@ -1,3 +1,4 @@
+using Photon.Pun;
 using ReadyPlayerMe;
 using System;
 using System.Collections;
@@ -14,22 +15,37 @@ public class AvatarFactory : MonoBehaviour
     public Avatar SqueletteAvatarAnimator;
     private Network network;
     private Vector3 position;
+    private bool IsMine = true;
+    private PhotonView AvatarPhotonView;
+    private int ViewID;
+
+    private PhotonView photonView;
     private void Start()
     {
+        photonView = this.GetComponent<PhotonView>();
         network = FindObjectOfType<Network>();
         avatarURL = network.Url;
-        CreateNewAvatar(new Vector3(0,0,0));
+        CreateNewAvatar(avatarURL, new Vector3(0,0,0));
+
+        photonView.RPC("CreateNewAvatarSync", RpcTarget.Others, avatarURL, new Vector3(0, 0, 0),ViewID);
     }
 
-    public string CreateNewAvatar(Vector3 position)
+    [PunRPC]
+    public void CreateNewAvatarSync(string url, Vector3 position,int ID)
+    {
+        string name = CreateNewAvatar(url, position);
+        GameObject.Find(name).GetComponent<PhotonView>().ViewID = ID;
+    }
+
+    public string CreateNewAvatar(string url, Vector3 position)
     {
         Debug.Log($"Started loading avatar");
         this.position = position;
         AvatarLoader avatarLoader = new AvatarLoader();
         avatarLoader.OnCompleted += AvatarLoadComplete;
         avatarLoader.OnFailed += AvatarLoadFail;
-        avatarLoader.LoadAvatar(avatarURL);
-        return GetAvatarName(avatarURL);
+        avatarLoader.LoadAvatar(url);
+        return GetAvatarName(url);
     }
 
     private string GetAvatarName(string url)
@@ -43,7 +59,9 @@ public class AvatarFactory : MonoBehaviour
         // On recupere le gameobject de l'avatar qui vient d'etre creer
         avatar = args.Avatar;
         avatar.transform.position = position;
-
+        GameObject Casque = GameObject.Find("Casque");
+        GameObject ManetteDroite = GameObject.Find("ManetteDroite");
+        GameObject ManetteGauche = GameObject.Find("ManetteGauche");
         // On recupere le squelettes de l'avatar sous forme de Liste
         Animator myAnimator = avatar.GetComponent<Animator>();
         GetAllHumanoidBones(myAnimator);
@@ -104,7 +122,6 @@ public class AvatarFactory : MonoBehaviour
         TargetGauche.transform.rotation = HumanBones[17].transform.rotation;
         HintGauche.transform.rotation = HumanBones[15].transform.rotation;
 
-
         GameObject TeteContrainte = addNewNode(MyRig, "TeteContrainte");
         MultiParentConstraint multiParentConstraint = TeteContrainte.AddComponent<MultiParentConstraint>();
         multiParentConstraint.data.constrainedObject = HumanBones[10];
@@ -115,6 +132,22 @@ public class AvatarFactory : MonoBehaviour
         TeteContrainte.transform.position = HumanBones[10].transform.position;
         TeteContrainte.transform.rotation = HumanBones[10].transform.rotation;
 
+        if (IsMine)
+        {
+            Casque.transform.position = HumanBones[10].transform.position;
+            ManetteDroite.transform.position = HumanBones[18].transform.position;
+            ManetteGauche.transform.position = HumanBones[17].transform.position;
+            MoveScript moveScript = avatar.AddComponent<MoveScript>();
+            moveScript.speed = 1;
+            moveScript.Casque = Casque;
+            moveScript.ManetteDroite = ManetteDroite;
+            moveScript.ManetteGauche = ManetteGauche;
+            AvatarPhotonView = avatar.AddComponent<PhotonView>();
+            PhotonNetwork.AllocateViewID(AvatarPhotonView);
+            ViewID = AvatarPhotonView.ViewID;
+            IsMine = false;
+        }
+
         multiParentConstraint.data.constrainedPositionXAxis = true;
         multiParentConstraint.data.constrainedPositionYAxis = true;
         multiParentConstraint.data.constrainedPositionZAxis = true;
@@ -124,9 +157,9 @@ public class AvatarFactory : MonoBehaviour
 
         VRRig VRRigScript = avatar.AddComponent<VRRig>();
         VRRigScript.headConstraint = TeteContrainte.transform;
-        VRMap VRMapLeftHand = new VRMap(GameObject.Find("ManetteGauche").transform, TargetGauche.transform, new Vector3(0, 0, 0), new Vector3(-90, 90, 0));
-        VRMap VRMapRightHand = new VRMap(GameObject.Find("ManetteDroite").transform, TargetDroit.transform, new Vector3(0, 0, 0), new Vector3(90, -90, 0));
-        VRMap VRMapTeteContrainte = new VRMap(GameObject.Find("Casque").transform, TeteContrainte.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+        VRMap VRMapLeftHand = new VRMap(ManetteGauche.transform, TargetGauche.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+        VRMap VRMapRightHand = new VRMap(ManetteDroite.transform, TargetDroit.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+        VRMap VRMapTeteContrainte = new VRMap(Casque.transform, TeteContrainte.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
         VRRigScript.head = VRMapTeteContrainte;
         VRRigScript.leftHand = VRMapLeftHand;
         VRRigScript.rightHand = VRMapRightHand;
@@ -138,11 +171,6 @@ public class AvatarFactory : MonoBehaviour
         myAnimator.runtimeAnimatorController = ControllerAnimator;
         myRigBuilder.Build();
 
-        MoveScript moveScript = avatar.AddComponent<MoveScript>();
-        moveScript.speed = 1;
-        moveScript.Casque = GameObject.Find("Casque");
-        moveScript.ManetteDroite = GameObject.Find("ManetteDroite");
-        moveScript.ManetteGauche = GameObject.Find("ManetteGauche");
     }
 
     private GameObject addNewNode(GameObject parentOb, string name)
