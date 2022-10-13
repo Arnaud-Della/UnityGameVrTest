@@ -153,6 +153,15 @@ public class AvatarFactory : MonoBehaviour
             moveScript.ManetteDroite = ManetteDroite;
             moveScript.ManetteGauche = ManetteGauche;
             PhotonNetwork.AllocateViewID(AvatarPhotonView);
+            VRRig VRRigScript = avatar.AddComponent<VRRig>();
+            VRRigScript.headConstraint = TeteContrainte.transform;
+            VRMap VRMapLeftHand = new VRMap(ManetteGauche.transform, TargetGauche.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            VRMap VRMapRightHand = new VRMap(ManetteDroite.transform, TargetDroit.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            VRMap VRMapTeteContrainte = new VRMap(Casque.transform, TeteContrainte.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            VRRigScript.head = VRMapTeteContrainte;
+            VRRigScript.leftHand = VRMapLeftHand;
+            VRRigScript.rightHand = VRMapRightHand;
+            VRRigScript.turnSmoothness = 3;
             IsMine = !IsMine;
             photonView.RPC("Sync", RpcTarget.Others, AvatarPhotonView.ViewID, new Vector3(0, 0, 0), avatarURL);
         }
@@ -171,16 +180,6 @@ public class AvatarFactory : MonoBehaviour
         multiParentConstraint.data.constrainedRotationYAxis = true;
         multiParentConstraint.data.constrainedRotationZAxis = true;
 
-
-        VRRig VRRigScript = avatar.AddComponent<VRRig>();
-        VRRigScript.headConstraint = TeteContrainte.transform;
-        VRMap VRMapLeftHand = new VRMap(ManetteGauche.transform, TargetGauche.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        VRMap VRMapRightHand = new VRMap(ManetteDroite.transform, TargetDroit.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        VRMap VRMapTeteContrainte = new VRMap(Casque.transform, TeteContrainte.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        VRRigScript.head = VRMapTeteContrainte;
-        VRRigScript.leftHand = VRMapLeftHand;
-        VRRigScript.rightHand = VRMapRightHand;
-        VRRigScript.turnSmoothness = 3;
 
 
         Debug.Log($"Avatar loaded Finish");
