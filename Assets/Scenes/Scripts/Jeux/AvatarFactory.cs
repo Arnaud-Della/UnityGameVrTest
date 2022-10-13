@@ -236,7 +236,7 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
     #region Pun Callbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        photonView.RPC("Sync", RpcTarget.Others, MyIDAvatar, new Vector3(0, 0, 0), avatarURL);
+        photonView.RPC("Sync", RpcTarget.Others, MyIDAvatar, avatar.transform.position, avatarURL);
     }
     #endregion
 }
