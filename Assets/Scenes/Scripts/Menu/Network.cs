@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -63,6 +64,7 @@ public class Network : MonoBehaviourPunCallbacks
         Debug.Log("Un nouveau joueur vient de se connecter : ");
         Debug.Log("Il y a " + PhotonNetwork.CurrentRoom.PlayerCount + " joueurs dans la room");
         JoinTheRoom();
+        Perturbation();
     }
 
     #endregion
@@ -74,5 +76,12 @@ public class Network : MonoBehaviourPunCallbacks
     public int GetNbPlayer()
     {
         return PhotonNetwork.CurrentRoom.PlayerCount;
+    }
+
+    public event EventHandler SomethingHappened;
+
+    public void Perturbation()
+    {
+        SomethingHappened.Invoke(this, EventArgs.Empty);
     }
 }

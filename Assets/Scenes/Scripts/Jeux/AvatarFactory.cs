@@ -41,6 +41,12 @@ public class AvatarFactory : MonoBehaviour
         network = FindObjectOfType<Network>();
         avatarURL = network.Url;
         CreateNewAvatar(avatarURL, new Vector3(0,0,0));
+        network.SomethingHappened += this.HandleEvent;
+    }
+
+    public void HandleEvent(object sender, EventArgs args)
+    {
+        Debug.LogWarning("Un nouveau joueur vient d'arriver => event");
     }
 
     public void CreateNewAvatar(string url, Vector3 position)
