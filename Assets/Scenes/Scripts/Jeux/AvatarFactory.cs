@@ -59,7 +59,7 @@ public class AvatarFactory : MonoBehaviour
 
         // On recupere le gameobject de l'avatar qui vient d'etre creer
         avatar = args.Avatar;
-        avatar.name =  Guid.NewGuid().ToString();
+        //avatar.name =  Guid.NewGuid().ToString();
         avatar.transform.position = position;
         GameObject Casque = GameObject.Find("Casque");
         GameObject ManetteDroite = GameObject.Find("ManetteDroite");
@@ -142,23 +142,22 @@ public class AvatarFactory : MonoBehaviour
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
             ManetteGauche.transform.position = HumanBones[17].transform.position;
-            /*MoveScript moveScript = avatar.AddComponent<MoveScript>();
+            MoveScript moveScript = avatar.AddComponent<MoveScript>();
             moveScript.speed = 1;
             moveScript.Casque = Casque;
             moveScript.ManetteDroite = ManetteDroite;
-            moveScript.ManetteGauche = ManetteGauche;*/
+            moveScript.ManetteGauche = ManetteGauche;
             PhotonNetwork.AllocateViewID(AvatarPhotonView);
-            //avatarConfigurationLoads.Add(new AvatarConfigurationLoad(AvatarPhotonView.ViewID, new Vector3(3, 0, 0)));
             IsMine = !IsMine;
+            photonView.RPC("Sync", RpcTarget.Others, AvatarPhotonView.ViewID, new Vector3(0, 0, 0), avatarURL);
         }
         else if (avatarConfigurationLoads.Count > 0)
         {
             AvatarPhotonView.ViewID = avatarConfigurationLoads[0].ViewID;
-            //avatar.transform.position = avatarConfigurationLoads[0].position;
             avatarConfigurationLoads.RemoveAt(0);
         }
         ///
-        photonView.RPC("Sync", RpcTarget.Others, AvatarPhotonView.ViewID, new Vector3(3, 0, 0), avatarURL);
+        
 
         multiParentConstraint.data.constrainedPositionXAxis = true;
         multiParentConstraint.data.constrainedPositionYAxis = true;
