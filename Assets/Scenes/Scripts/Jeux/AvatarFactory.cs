@@ -42,6 +42,7 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
         //photonView = this.GetComponent<PhotonView>();
         network = FindObjectOfType<Network>();
         avatarURL = network.Url;
+        Debug.Log(avatarURL);
         CreateNewAvatar(avatarURL, Vector3.zero);
     }
 
@@ -238,7 +239,7 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
     #region Pun Callbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        photonView.RPC("Sync", RpcTarget.Others, MyIDAvatar, MyAvatar.transform.position, avatarURL);
+        photonView.RPC("Sync", newPlayer, MyIDAvatar, MyAvatar.transform.position, avatarURL);
     }
     #endregion
 }
