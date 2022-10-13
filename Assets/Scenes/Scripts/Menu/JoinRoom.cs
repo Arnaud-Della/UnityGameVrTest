@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class JoinRoom : MonoBehaviour
 {
-    public Network network;
     public TMP_InputField RoomName;
     public TMP_InputField Url;
 
@@ -18,6 +17,6 @@ public class JoinRoom : MonoBehaviour
 
     private void OnClick()
     {
-        network.Connection(RoomName.text, Url.text);
+        Network.Connection(RoomName.text, Url.text);
     }
 }

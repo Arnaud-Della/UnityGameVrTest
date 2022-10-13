@@ -1,159 +1,208 @@
 using Photon.Pun;
 using ReadyPlayerMe;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
 public class AvatarFactory : MonoBehaviour
 {
-    private string avatarURL;
-    private GameObject avatar;
-    private List<Transform> HumanBones;
+    public GameObject Casque;
+    public GameObject ManetteDroite;
+    public GameObject ManetteGauche;
     public RuntimeAnimatorController ControllerAnimator;
     public Avatar SqueletteAvatarAnimator;
-    private Network network;
-    private Vector3 position;
+    public PhotonView photonView;
 
-    private PhotonView photonView;
+    private List<Transform> HumanBones = new List<Transform>();
+    private List<AvatarConfiguration> AvatarStampToCreate = new List<AvatarConfiguration>();
+    private AvatarConfiguration MyAvatarConfiguration;
+    private bool IsMyOwnAvatar = true;
+    private string Url;
+
     private void Start()
     {
-        photonView = this.GetComponent<PhotonView>();
-        network = FindObjectOfType<Network>();
-        avatarURL = network.Url;
-        CreateNewAvatar(avatarURL, new Vector3(0,0,0));
+        Url = Network.Url;
+        Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
+        CreateNewAvatar(Url);
     }
 
-    public string CreateNewAvatar(string url, Vector3 position)
+    private void CreateNewAvatar(string url)
     {
         Debug.Log($"Started loading avatar");
-        this.position = position;
         AvatarLoader avatarLoader = new AvatarLoader();
         avatarLoader.OnCompleted += AvatarLoadComplete;
         avatarLoader.OnFailed += AvatarLoadFail;
         avatarLoader.LoadAvatar(url);
-        return GetAvatarName(url);
     }
 
-    private string GetAvatarName(string url)
-    {
-        return url.Split("/")[url.Split("/").Length - 1].Split(".")[url.Split("/")[url.Split("/").Length - 1].Split(".").Length - 2];
-    }
     private void AvatarLoadComplete(object sender, CompletionEventArgs args)
     {
-        Debug.Log($"Avatar loaded");
+        //////////////////////////// Initialisation des variables /////////////////////////////////
 
-        // On recupere le gameobject de l'avatar qui vient d'etre creer
-        avatar = args.Avatar;
-        avatar.transform.position = position;
-        GameObject Casque = GameObject.Find("Casque");
-        GameObject ManetteDroite = GameObject.Find("ManetteDroite");
-        GameObject ManetteGauche = GameObject.Find("ManetteGauche");
-        // On recupere le squelettes de l'avatar sous forme de Liste
-        Animator myAnimator = avatar.GetComponent<Animator>();
-        GetAllHumanoidBones(myAnimator);
-        // On oublie pas de remettre le runtimecontroller, sinon erreur (chimpanzé)
-        myAnimator.runtimeAnimatorController = null;
+        // Avatar
+        GameObject avatar = args.Avatar;
+        RigBuilder rigBuilder = avatar.AddComponent<RigBuilder>();
+        BoneRenderer boneRenderer = avatar.AddComponent<BoneRenderer>();
+        Animator animator = avatar.GetComponent<Animator>();
 
-        // On ajoute a l'avatar de nouveau components, RigBuilder et BoneRenderer
-        RigBuilder myRigBuilder = avatar.AddComponent<RigBuilder>();
-        BoneRenderer myBoneRenderer = avatar.AddComponent<BoneRenderer>();
+        // Rig
+        GameObject Rig = addNewNode(avatar, "Rig");
+        Rig rigComponent = Rig.AddComponent<Rig>();
 
-        // On precise le squeletes utiliser au BoneRenderer
-        myBoneRenderer.transforms = HumanBones.ToArray();
+        // Bras Droit
+        GameObject brasDroit = addNewNode(Rig, "BrasDroit");
+        GameObject targetDroit = addNewNode(brasDroit, "Target");
+        GameObject hintDroit = addNewNode(brasDroit, "Hint");
+        TwoBoneIKConstraint twoBoneBrasDroit = brasDroit.AddComponent<TwoBoneIKConstraint>();
 
-        // On creer un GameObject Rig dans l'avatar
-        // On y ajoute un bras droit et gauche ainsi que une tete
-        GameObject MyRig = addNewNode(avatar, "MyRig");
-        GameObject BrasDroit = addNewNode(MyRig, "BrasDroit");
-        GameObject BrasGauche = addNewNode(MyRig, "BrasGauche");
-        GameObject TargetDroit = addNewNode(BrasDroit, "Target");
-        GameObject HintDroit = addNewNode(BrasDroit, "Hint");
-        GameObject TargetGauche = addNewNode(BrasGauche, "Target");
-        GameObject HintGauche = addNewNode(BrasGauche, "Hint");
+        // Bras Gauche
+        GameObject brasGauche = addNewNode(Rig, "BrasGauche");
+        GameObject targetGauche = addNewNode(brasGauche, "Target");
+        GameObject hintGauche = addNewNode(brasGauche, "Hint");
+        TwoBoneIKConstraint twoBoneBrasGauche = brasGauche.AddComponent<TwoBoneIKConstraint>();
 
-        MyRig.AddComponent<Rig>();
-        myRigBuilder.layers.Clear();
-        myRigBuilder.layers.Add(new RigLayer(MyRig.GetComponent<Rig>()));
+        // Tete
+        GameObject TeteContrainte = addNewNode(Rig, "TeteContrainte");
+        MultiParentConstraint multiParentConstrainTeteContrainte = TeteContrainte.AddComponent<MultiParentConstraint>();
 
-        TwoBoneIKConstraint TwoBoneDroit = BrasDroit.AddComponent<TwoBoneIKConstraint>();
-        TwoBoneDroit.enabled = true;
-        TwoBoneDroit.data.root = HumanBones[14];
-        TwoBoneDroit.data.mid = HumanBones[16];
-        TwoBoneDroit.data.tip = HumanBones[18];
-        TwoBoneDroit.data.target = TargetDroit.transform;
-        TwoBoneDroit.data.hint = HintDroit.transform;
-        TwoBoneDroit.data.targetRotationWeight = 1f;
-        TwoBoneDroit.data.targetPositionWeight = 1f;
-        TwoBoneDroit.data.hintWeight = 1f;
-
-        TargetDroit.transform.position = HumanBones[18].transform.position;
-        HintDroit.transform.position = HumanBones[16].transform.position;
-        TargetDroit.transform.rotation = HumanBones[18].transform.rotation;
-        HintDroit.transform.rotation = HumanBones[16].transform.rotation;
+        // PhotonConfig
+        PhotonView AvatarPhotonView = avatar.AddComponent<PhotonView>();
+        PhotonTransformView avatarPhotonTransformView = avatar.AddComponent<PhotonTransformView>();
 
 
-        TwoBoneIKConstraint TwoBoneGauche = BrasGauche.AddComponent<TwoBoneIKConstraint>();
-        TwoBoneGauche.enabled = true;
-        TwoBoneGauche.data.root = HumanBones[13];
-        TwoBoneGauche.data.mid = HumanBones[15];
-        TwoBoneGauche.data.tip = HumanBones[17];
-        TwoBoneGauche.data.target = TargetGauche.transform;
-        TwoBoneGauche.data.hint = HintGauche.transform;
-        TwoBoneGauche.data.targetRotationWeight = 1f;
-        TwoBoneGauche.data.targetPositionWeight = 1f;
-        TwoBoneGauche.data.hintWeight = 1f;
+        //////////////////////////// Declaration des variables /////////////////////////////////
 
-        TargetGauche.transform.position = HumanBones[17].transform.position;
-        HintGauche.transform.position = HumanBones[15].transform.position;
-        TargetGauche.transform.rotation = HumanBones[17].transform.rotation;
-        HintGauche.transform.rotation = HumanBones[15].transform.rotation;
+        // Avatar
+        rigBuilder.layers.Clear();
+        rigBuilder.layers.Add(new RigLayer(rigComponent));
+        GetAllHumanoidBones(animator);
+        boneRenderer.transforms = HumanBones.ToArray();
 
-        GameObject TeteContrainte = addNewNode(MyRig, "TeteContrainte");
-        MultiParentConstraint multiParentConstraint = TeteContrainte.AddComponent<MultiParentConstraint>();
-        multiParentConstraint.data.constrainedObject = HumanBones[10];
-        var tamp = new WeightedTransformArray();
+
+        // Bras Droit
+        twoBoneBrasDroit.enabled = true;
+        twoBoneBrasDroit.data.root = HumanBones[14];
+        twoBoneBrasDroit.data.mid = HumanBones[16];
+        twoBoneBrasDroit.data.tip = HumanBones[18];
+        twoBoneBrasDroit.data.target = targetDroit.transform;
+        twoBoneBrasDroit.data.hint = hintDroit.transform;
+        twoBoneBrasDroit.data.targetRotationWeight = 1f;
+        twoBoneBrasDroit.data.targetPositionWeight = 1f;
+        twoBoneBrasDroit.data.hintWeight = 1f;
+        // Aligne transform
+        targetDroit.transform.position = HumanBones[18].transform.position;
+        hintDroit.transform.position = HumanBones[16].transform.position;
+        targetDroit.transform.rotation = HumanBones[18].transform.rotation;
+        hintDroit.transform.rotation = HumanBones[16].transform.rotation;
+
+
+        // Bras Gauche
+        twoBoneBrasGauche.enabled = true;
+        twoBoneBrasGauche.data.root = HumanBones[13];
+        twoBoneBrasGauche.data.mid = HumanBones[15];
+        twoBoneBrasGauche.data.tip = HumanBones[17];
+        twoBoneBrasGauche.data.target = targetGauche.transform;
+        twoBoneBrasGauche.data.hint = hintGauche.transform;
+        twoBoneBrasGauche.data.targetRotationWeight = 1f;
+        twoBoneBrasGauche.data.targetPositionWeight = 1f;
+        twoBoneBrasGauche.data.hintWeight = 1f;
+        // Aligne transform
+        targetGauche.transform.position = HumanBones[17].transform.position;
+        hintGauche.transform.position = HumanBones[15].transform.position;
+        targetGauche.transform.rotation = HumanBones[17].transform.rotation;
+        hintGauche.transform.rotation = HumanBones[15].transform.rotation;
+
+
+        // Tete
+        multiParentConstrainTeteContrainte.data.constrainedObject = HumanBones[10];
+        WeightedTransformArray tamp = new WeightedTransformArray();
         tamp.Add(new WeightedTransform(TeteContrainte.transform, 1f));
-        multiParentConstraint.data.sourceObjects = tamp;
-
+        multiParentConstrainTeteContrainte.data.sourceObjects = tamp;
+        multiParentConstrainTeteContrainte.data.constrainedPositionXAxis = true;
+        multiParentConstrainTeteContrainte.data.constrainedPositionYAxis = true;
+        multiParentConstrainTeteContrainte.data.constrainedPositionZAxis = true;
+        multiParentConstrainTeteContrainte.data.constrainedRotationXAxis = true;
+        multiParentConstrainTeteContrainte.data.constrainedRotationYAxis = true;
+        multiParentConstrainTeteContrainte.data.constrainedRotationZAxis = true;
+        // Aligne transform
         TeteContrainte.transform.position = HumanBones[10].transform.position;
         TeteContrainte.transform.rotation = HumanBones[10].transform.rotation;
 
-        Casque.transform.position = HumanBones[10].transform.position;
-        ManetteDroite.transform.position = HumanBones[18].transform.position;
-        ManetteGauche.transform.position = HumanBones[17].transform.position;
-        MoveScript moveScript = avatar.AddComponent<MoveScript>();
-        moveScript.speed = 1;
-        moveScript.Casque = Casque;
-        moveScript.ManetteDroite = ManetteDroite;
-        moveScript.ManetteGauche = ManetteGauche;
 
-        multiParentConstraint.data.constrainedPositionXAxis = true;
-        multiParentConstraint.data.constrainedPositionYAxis = true;
-        multiParentConstraint.data.constrainedPositionZAxis = true;
-        multiParentConstraint.data.constrainedRotationXAxis = true;
-        multiParentConstraint.data.constrainedRotationYAxis = true;
-        multiParentConstraint.data.constrainedRotationZAxis = true;
+        // Photon Configuration
+        avatarPhotonTransformView.m_SynchronizePosition = true;
+        avatarPhotonTransformView.m_SynchronizeRotation = true;
+        avatarPhotonTransformView.m_UseLocal = true;
+        AvatarPhotonView.ObservedComponents = new List<Component>() { avatarPhotonTransformView };
 
-        VRRig VRRigScript = avatar.AddComponent<VRRig>();
-        VRRigScript.headConstraint = TeteContrainte.transform;
-        VRMap VRMapLeftHand = new VRMap(ManetteGauche.transform, TargetGauche.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        VRMap VRMapRightHand = new VRMap(ManetteDroite.transform, TargetDroit.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        VRMap VRMapTeteContrainte = new VRMap(Casque.transform, TeteContrainte.transform, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        VRRigScript.head = VRMapTeteContrainte;
-        VRRigScript.leftHand = VRMapLeftHand;
-        VRRigScript.rightHand = VRMapRightHand;
-        VRRigScript.turnSmoothness = 3;
+        
+        if (IsMyOwnAvatar && AvatarStampToCreate.Count == 0)
+        {
+            // Aligne transform du Casque et des Manettes du VR avec l'avatar
+            Casque.transform.position = HumanBones[10].transform.position;
+            ManetteDroite.transform.position = HumanBones[18].transform.position;
+            ManetteGauche.transform.position = HumanBones[17].transform.position;
+
+            // Configuration du script de deplacement
+            MoveScript moveScript = avatar.AddComponent<MoveScript>();
+            moveScript.speed = 1;
+            moveScript.Casque = Casque;
+            moveScript.ManetteDroite = ManetteDroite;
+            moveScript.ManetteGauche = ManetteGauche;
+
+            // Configuration du script de suivit du Casque et des Manettes liées aux mains et à la tete du joueur
+            VRRig VRRigScript = avatar.AddComponent<VRRig>();
+            VRRigScript.headConstraint = TeteContrainte.transform;
+            VRMap VRMapLeftHand = new VRMap(ManetteGauche.transform, targetGauche.transform, Vector3.zero, Vector3.zero);
+            VRMap VRMapRightHand = new VRMap(ManetteDroite.transform, targetDroit.transform, Vector3.zero, Vector3.zero);
+            VRMap VRMapTeteContrainte = new VRMap(Casque.transform, TeteContrainte.transform, Vector3.zero, Vector3.zero);
+            VRRigScript.head = VRMapTeteContrainte;
+            VRRigScript.leftHand = VRMapLeftHand;
+            VRRigScript.rightHand = VRMapRightHand;
+            VRRigScript.turnSmoothness = 3;
+
+            // Allocation d'un ViewID pour mon avatar
+            PhotonNetwork.AllocateViewID(AvatarPhotonView);
+
+            // Recuperation de la configuration de mon avatar
+            MyAvatarConfiguration = new AvatarConfiguration(AvatarPhotonView.ViewID, Vector3.zero, Url, avatar);
+            IsMyOwnAvatar = false;
+
+            // Creation de mon Avatar chez les autres joueur
+            photonView.RPC("Sync", RpcTarget.Others, MyAvatarConfiguration.ViewID, Vector3.zero, Url);
+        }
+        else if (AvatarStampToCreate.Count > 0)
+        {
+            // Attribution du ViewID et de la position à l'avatar adverse 
+            AvatarPhotonView.ViewID = AvatarStampToCreate[0].ViewID;
+            avatar.transform.position = AvatarStampToCreate[0].Position;
+            // Suppression des informations de configuration de cette avatar du buffer
+            AvatarStampToCreate.RemoveAt(0);
+        }
 
 
-        Debug.Log($"Avatar loaded Finish");
-        myAnimator.avatar = SqueletteAvatarAnimator;
-        myAnimator.runtimeAnimatorController = ControllerAnimator;
-        myRigBuilder.Build();
 
+        // Finalisation de la Creation de l'avatar
+        animator.avatar = SqueletteAvatarAnimator;
+        animator.runtimeAnimatorController = ControllerAnimator;
+        rigBuilder.Build();
     }
 
+    [PunRPC]
+    protected virtual void Sync(int ViewID, Vector3 position, string url)
+    {
+        //Debug.Log($"{ViewID}, {position}, {url}");
+        AvatarConfiguration avatarConfiguration = new AvatarConfiguration(ViewID, position, url);
+        AvatarStampToCreate.Add(avatarConfiguration);
+        CreateNewAvatar(url);
+    }
+
+    public void SyncWithNewPlayer(object sender, EventPlayer args)
+    {
+        Debug.LogWarning("Un nouveau joueur vient d'arriver => event");
+        photonView.RPC("Sync", args.player, MyAvatarConfiguration.ViewID, MyAvatarConfiguration.GetAvatar.transform.position, MyAvatarConfiguration.Url);
+    }
     private GameObject addNewNode(GameObject parentOb, string name)
     {
         GameObject childOb = new GameObject(name);
@@ -168,8 +217,6 @@ public class AvatarFactory : MonoBehaviour
 
     private Transform[] GetAllHumanoidBones(Animator _animator)
     {
-        HumanBones = new List<Transform>();
-
         if (_animator == null) return null;
 
         foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
@@ -186,5 +233,22 @@ public class AvatarFactory : MonoBehaviour
 
         }
         return HumanBones.ToArray();
+    }
+}
+
+[System.Serializable]
+public class AvatarConfiguration
+{
+    public int ViewID;
+    public Vector3 Position;
+    public string Url;
+    private GameObject Avatar;
+    public GameObject GetAvatar { get => Avatar;}
+    public AvatarConfiguration(int ViewID, Vector3 Position, string Url, GameObject Avatar = null)
+    {
+        this.ViewID = ViewID;
+        this.Position = Position;
+        this.Url = Url;
+        this.Avatar = Avatar;
     }
 }
