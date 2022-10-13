@@ -132,6 +132,8 @@ public class AvatarFactory : MonoBehaviour
         TeteContrainte.transform.position = HumanBones[10].transform.position;
         TeteContrainte.transform.rotation = HumanBones[10].transform.rotation;
 
+        AvatarPhotonView = avatar.AddComponent<PhotonView>();
+
         if (IsMine)
         {
             Casque.transform.position = HumanBones[10].transform.position;
@@ -142,7 +144,6 @@ public class AvatarFactory : MonoBehaviour
             moveScript.Casque = Casque;
             moveScript.ManetteDroite = ManetteDroite;
             moveScript.ManetteGauche = ManetteGauche;
-            AvatarPhotonView = avatar.AddComponent<PhotonView>();
             PhotonNetwork.AllocateViewID(AvatarPhotonView);
             ViewID = AvatarPhotonView.ViewID;
             IsMine = false;
