@@ -6,6 +6,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
+public class AvatarConfigurationLoad
+{
+    public int ViewID;
+    public Vector3 position = Vector3.zero;
+    public string url;
+    public AvatarConfigurationLoad(int ViewID, Vector3 position, string url)
+    {
+        this.ViewID = ViewID;
+        this.position = position;
+        this.url = url;
+    }
+}
+
 public class AvatarFactory : MonoBehaviour
 {
     private string avatarURL;
@@ -15,10 +28,13 @@ public class AvatarFactory : MonoBehaviour
     public Avatar SqueletteAvatarAnimator;
     private Network network;
     private Vector3 position;
-
     private PhotonView photonView;
+
+    private List<AvatarConfigurationLoad> avatarConfigurationLoads;
+
     private void Start()
     {
+        avatarConfigurationLoads = new List<AvatarConfigurationLoad>();
         photonView = this.GetComponent<PhotonView>();
         network = FindObjectOfType<Network>();
         avatarURL = network.Url;
@@ -35,10 +51,6 @@ public class AvatarFactory : MonoBehaviour
         avatarLoader.LoadAvatar(url);
     }
 
-    private string GetAvatarName(string url)
-    {
-        return url.Split("/")[url.Split("/").Length - 1].Split(".")[url.Split("/")[url.Split("/").Length - 1].Split(".").Length - 2];
-    }
     private void AvatarLoadComplete(object sender, CompletionEventArgs args)
     {
         Debug.Log($"Avatar loaded");
@@ -120,15 +132,28 @@ public class AvatarFactory : MonoBehaviour
         TeteContrainte.transform.position = HumanBones[10].transform.position;
         TeteContrainte.transform.rotation = HumanBones[10].transform.rotation;
 
-        ////
-        Casque.transform.position = HumanBones[10].transform.position;
-        ManetteDroite.transform.position = HumanBones[18].transform.position;
-        ManetteGauche.transform.position = HumanBones[17].transform.position;
-        MoveScript moveScript = avatar.AddComponent<MoveScript>();
-        moveScript.speed = 1;
-        moveScript.Casque = Casque;
-        moveScript.ManetteDroite = ManetteDroite;
-        moveScript.ManetteGauche = ManetteGauche;
+        ///
+        PhotonView AvatarPhotonView = avatar.AddComponent<PhotonView>();
+
+        if (avatarConfigurationLoads.Count == 0)
+        {
+            Casque.transform.position = HumanBones[10].transform.position;
+            ManetteDroite.transform.position = HumanBones[18].transform.position;
+            ManetteGauche.transform.position = HumanBones[17].transform.position;
+            MoveScript moveScript = avatar.AddComponent<MoveScript>();
+            moveScript.speed = 1;
+            moveScript.Casque = Casque;
+            moveScript.ManetteDroite = ManetteDroite;
+            moveScript.ManetteGauche = ManetteGauche;
+            PhotonNetwork.AllocateViewID(AvatarPhotonView);
+            //avatarConfigurationLoads.Add(new AvatarConfigurationLoad(AvatarPhotonView.ViewID, new Vector3(3, 0, 0)));
+        }
+        else
+        {
+            AvatarPhotonView.ViewID = avatarConfigurationLoads[0].ViewID;
+            //avatar.transform.position = avatarConfigurationLoads[0].position;
+            avatarConfigurationLoads.RemoveAt(0);
+        }
         ///
 
 
@@ -155,7 +180,7 @@ public class AvatarFactory : MonoBehaviour
         myAnimator.avatar = SqueletteAvatarAnimator;
         myAnimator.runtimeAnimatorController = ControllerAnimator;
         myRigBuilder.Build();
-
+        photonView.RPC("Sync", RpcTarget.Others, new AvatarConfigurationLoad(AvatarPhotonView.ViewID, new Vector3(3, 0, 0), avatarURL));
     }
 
     private GameObject addNewNode(GameObject parentOb, string name)
@@ -190,5 +215,12 @@ public class AvatarFactory : MonoBehaviour
 
         }
         return HumanBones.ToArray();
+    }
+
+    [PunRPC]
+    private void Sync(AvatarConfigurationLoad conf)
+    {
+        avatarConfigurationLoads.Add(conf);
+        CreateNewAvatar(conf.url, conf.position);
     }
 }
