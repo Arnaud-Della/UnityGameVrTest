@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.UIElements;
 
 public class AvatarFactory : MonoBehaviour
 {
@@ -137,7 +138,8 @@ public class AvatarFactory : MonoBehaviour
         
         if (IsMyOwnAvatar && AvatarStampToCreate.Count == 0)
         {
-            Debug.LogWarning("Je cree mon propre Avatar");
+            Debug.LogWarning($"Je cree mon propre Avatar {Url}");
+
             // Aligne transform du Casque et des Manettes du VR avec l'avatar
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
@@ -168,10 +170,18 @@ public class AvatarFactory : MonoBehaviour
             MyAvatarConfiguration = new AvatarConfiguration(AvatarPhotonView.ViewID, Vector3.zero, Url, avatar);
             IsMyOwnAvatar = false;
 
-            //Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
+            // Finalisation de la Creation de l'avatar
+            animator.avatar = SqueletteAvatarAnimator;
+            animator.runtimeAnimatorController = ControllerAnimator;
+            rigBuilder.Build();
+
+            Debug.LogWarning("L'Avatar a été correctement creer");
+            Debug.LogWarning($"INFO : {AvatarPhotonView.ViewID}, {avatar.transform.position}");
 
             // Creation de mon Avatar chez les autres joueur
             photonView.RPC("Sync", RpcTarget.Others, MyAvatarConfiguration.ViewID, Vector3.zero, Url);
+
+            Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
         }
         else if (AvatarStampToCreate.Count > 0)
         {
@@ -184,18 +194,13 @@ public class AvatarFactory : MonoBehaviour
 
 
 
-        // Finalisation de la Creation de l'avatar
-        animator.avatar = SqueletteAvatarAnimator;
-        animator.runtimeAnimatorController = ControllerAnimator;
-        rigBuilder.Build();
-
-        Debug.LogWarning("L'Avatar a été correctement creer");
+        
     }
 
     [PunRPC]
     protected virtual void Sync(int ViewID, Vector3 position, string url)
     {
-        //Debug.Log($"{ViewID}, {position}, {url}");
+        Debug.LogWarning($"SYNC : {ViewID}, {position}, {url}");
         AvatarConfiguration avatarConfiguration = new AvatarConfiguration(ViewID, position, url);
         AvatarStampToCreate.Add(avatarConfiguration);
         CreateNewAvatar(url);
