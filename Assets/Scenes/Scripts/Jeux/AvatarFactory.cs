@@ -13,16 +13,18 @@ public class AvatarFactory : MonoBehaviour
     public RuntimeAnimatorController ControllerAnimator;
     public Avatar SqueletteAvatarAnimator;
     private Network network;
+    private Vector3 position;
     private void Start()
     {
         network = FindObjectOfType<Network>();
         avatarURL = network.Url;
-        CreateNewAvatar();
+        CreateNewAvatar(new Vector3(0,0,0));
     }
 
-    public string CreateNewAvatar()
+    public string CreateNewAvatar(Vector3 position)
     {
         Debug.Log($"Started loading avatar");
+        this.position = position;
         AvatarLoader avatarLoader = new AvatarLoader();
         avatarLoader.OnCompleted += AvatarLoadComplete;
         avatarLoader.OnFailed += AvatarLoadFail;
@@ -40,6 +42,7 @@ public class AvatarFactory : MonoBehaviour
 
         // On recupere le gameobject de l'avatar qui vient d'etre creer
         avatar = args.Avatar;
+        avatar.transform.position = position;
 
         // On recupere le squelettes de l'avatar sous forme de Liste
         Animator myAnimator = avatar.GetComponent<Animator>();
