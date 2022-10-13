@@ -140,11 +140,11 @@ public class AvatarFactory : MonoBehaviour
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
             ManetteGauche.transform.position = HumanBones[17].transform.position;
-            MoveScript moveScript = avatar.AddComponent<MoveScript>();
+            /*MoveScript moveScript = avatar.AddComponent<MoveScript>();
             moveScript.speed = 1;
             moveScript.Casque = Casque;
             moveScript.ManetteDroite = ManetteDroite;
-            moveScript.ManetteGauche = ManetteGauche;
+            moveScript.ManetteGauche = ManetteGauche;*/
             PhotonNetwork.AllocateViewID(AvatarPhotonView);
             //avatarConfigurationLoads.Add(new AvatarConfigurationLoad(AvatarPhotonView.ViewID, new Vector3(3, 0, 0)));
         }
@@ -180,7 +180,9 @@ public class AvatarFactory : MonoBehaviour
         myAnimator.avatar = SqueletteAvatarAnimator;
         myAnimator.runtimeAnimatorController = ControllerAnimator;
         myRigBuilder.Build();
+        Debug.Log("bonjour avant");
         photonView.RPC("Sync", RpcTarget.Others, new AvatarConfigurationLoad(AvatarPhotonView.ViewID, new Vector3(3, 0, 0), avatarURL));
+        Debug.Log("bonjour apres");
     }
 
     private GameObject addNewNode(GameObject parentOb, string name)
@@ -221,7 +223,7 @@ public class AvatarFactory : MonoBehaviour
     private void Sync(AvatarConfigurationLoad conf)
     {
         Debug.Log("bonjour rpc");
-        avatarConfigurationLoads.Add(conf);
-        CreateNewAvatar(conf.url, conf.position);
+        /*avatarConfigurationLoads.Add(conf);
+        CreateNewAvatar(conf.url, conf.position);*/
     }
 }
