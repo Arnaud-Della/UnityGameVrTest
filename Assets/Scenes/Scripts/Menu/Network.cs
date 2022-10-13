@@ -62,14 +62,14 @@ public class Network : MonoBehaviourPunCallbacks
     {
         Debug.Log("Un nouveau joueur vient de se connecter : ");
         Debug.Log("Il y a " + PhotonNetwork.CurrentRoom.PlayerCount + " joueurs dans la room");
-        JoinTheRoom();
+        //JoinTheRoom();
     }
 
     #endregion
 
     private void JoinTheRoom()
     {
-        SceneManager.LoadScene("Room");
+        SceneManager.LoadScene("Jeux");
     }
     public int GetNbPlayer()
     {

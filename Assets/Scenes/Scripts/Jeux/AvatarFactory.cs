@@ -40,7 +40,7 @@ public class AvatarFactory : MonoBehaviour
         photonView = this.GetComponent<PhotonView>();
         network = FindObjectOfType<Network>();
         avatarURL = network.Url;
-        CreateNewAvatar(avatarURL, new Vector3(0,0,0));
+        CreateNewAvatar(avatarURL, Vector3.zero);
     }
 
     public void CreateNewAvatar(string url, Vector3 position)
@@ -182,13 +182,11 @@ public class AvatarFactory : MonoBehaviour
 
 
 
-        Debug.Log($"Avatar loaded Finish");
+        
         myAnimator.avatar = SqueletteAvatarAnimator;
         myAnimator.runtimeAnimatorController = ControllerAnimator;
         myRigBuilder.Build();
-        Debug.Log("bonjour avant");
-        
-        Debug.Log("bonjour apres");
+        Debug.Log($"Avatar loaded Finish");
     }
 
     private GameObject addNewNode(GameObject parentOb, string name)
@@ -228,7 +226,6 @@ public class AvatarFactory : MonoBehaviour
     [PunRPC]
     protected virtual void Sync(int ViewID, Vector3 position, string url)
     {
-        Debug.Log("bonjour rpc");
         avatarConfigurationLoads.Add(new AvatarConfigurationLoad(ViewID, position, url));
         CreateNewAvatar(url, position);
     }
