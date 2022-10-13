@@ -140,7 +140,7 @@ public class AvatarFactory : MonoBehaviour
         photonTransformView.m_SynchronizePosition = true;
         photonTransformView.m_SynchronizeRotation = true;
         photonTransformView.m_UseLocal = true;
-        AvatarPhotonView.ObservedComponents.Add(photonTransformView);
+        AvatarPhotonView.ObservedComponents = new List<Component>() { photonTransformView };
 
         if (avatarConfigurationLoads.Count == 0 && IsMine)
         {
