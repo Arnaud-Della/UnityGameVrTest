@@ -25,7 +25,7 @@ public class AvatarFactory : MonoBehaviour
         CreateNewAvatar(avatarURL, new Vector3(0,0,0));
     }
 
-    public string CreateNewAvatar(string url, Vector3 position)
+    public void CreateNewAvatar(string url, Vector3 position)
     {
         Debug.Log($"Started loading avatar");
         this.position = position;
@@ -33,7 +33,6 @@ public class AvatarFactory : MonoBehaviour
         avatarLoader.OnCompleted += AvatarLoadComplete;
         avatarLoader.OnFailed += AvatarLoadFail;
         avatarLoader.LoadAvatar(url);
-        return GetAvatarName(url);
     }
 
     private string GetAvatarName(string url)
@@ -46,6 +45,7 @@ public class AvatarFactory : MonoBehaviour
 
         // On recupere le gameobject de l'avatar qui vient d'etre creer
         avatar = args.Avatar;
+        avatar.name =  Guid.NewGuid().ToString();
         avatar.transform.position = position;
         GameObject Casque = GameObject.Find("Casque");
         GameObject ManetteDroite = GameObject.Find("ManetteDroite");
@@ -120,6 +120,7 @@ public class AvatarFactory : MonoBehaviour
         TeteContrainte.transform.position = HumanBones[10].transform.position;
         TeteContrainte.transform.rotation = HumanBones[10].transform.rotation;
 
+        ////
         Casque.transform.position = HumanBones[10].transform.position;
         ManetteDroite.transform.position = HumanBones[18].transform.position;
         ManetteGauche.transform.position = HumanBones[17].transform.position;
@@ -128,6 +129,8 @@ public class AvatarFactory : MonoBehaviour
         moveScript.Casque = Casque;
         moveScript.ManetteDroite = ManetteDroite;
         moveScript.ManetteGauche = ManetteGauche;
+        ///
+
 
         multiParentConstraint.data.constrainedPositionXAxis = true;
         multiParentConstraint.data.constrainedPositionYAxis = true;
