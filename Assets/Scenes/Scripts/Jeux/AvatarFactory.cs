@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
+[System.Serializable]
 public class AvatarConfigurationLoad
 {
     public int ViewID;
-    public Vector3 position = Vector3.zero;
+    public Vector3 position;
     public string url;
     public AvatarConfigurationLoad(int ViewID, Vector3 position, string url)
     {
@@ -31,6 +32,7 @@ public class AvatarFactory : MonoBehaviour
     private PhotonView photonView;
 
     private List<AvatarConfigurationLoad> avatarConfigurationLoads;
+    private bool IsMine = true;
 
     private void Start()
     {
@@ -135,7 +137,7 @@ public class AvatarFactory : MonoBehaviour
         ///
         PhotonView AvatarPhotonView = avatar.AddComponent<PhotonView>();
 
-        if (avatarConfigurationLoads.Count == 0)
+        if (avatarConfigurationLoads.Count == 0 && IsMine)
         {
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
@@ -147,15 +149,16 @@ public class AvatarFactory : MonoBehaviour
             moveScript.ManetteGauche = ManetteGauche;*/
             PhotonNetwork.AllocateViewID(AvatarPhotonView);
             //avatarConfigurationLoads.Add(new AvatarConfigurationLoad(AvatarPhotonView.ViewID, new Vector3(3, 0, 0)));
+            IsMine = !IsMine;
         }
-        else
+        else if (avatarConfigurationLoads.Count > 0)
         {
             AvatarPhotonView.ViewID = avatarConfigurationLoads[0].ViewID;
             //avatar.transform.position = avatarConfigurationLoads[0].position;
             avatarConfigurationLoads.RemoveAt(0);
         }
         ///
-
+        photonView.RPC("Sync", RpcTarget.Others, AvatarPhotonView.ViewID, new Vector3(3, 0, 0), avatarURL);
 
         multiParentConstraint.data.constrainedPositionXAxis = true;
         multiParentConstraint.data.constrainedPositionYAxis = true;
@@ -181,7 +184,7 @@ public class AvatarFactory : MonoBehaviour
         myAnimator.runtimeAnimatorController = ControllerAnimator;
         myRigBuilder.Build();
         Debug.Log("bonjour avant");
-        photonView.RPC("Sync", RpcTarget.Others, new AvatarConfigurationLoad(AvatarPhotonView.ViewID, new Vector3(3, 0, 0), avatarURL));
+        
         Debug.Log("bonjour apres");
     }
 
@@ -220,10 +223,10 @@ public class AvatarFactory : MonoBehaviour
     }
 
     [PunRPC]
-    protected virtual void Sync(AvatarConfigurationLoad conf)
+    protected virtual void Sync(int ViewID, Vector3 position, string url)
     {
         Debug.Log("bonjour rpc");
-        /*avatarConfigurationLoads.Add(conf);
-        CreateNewAvatar(conf.url, conf.position);*/
+        avatarConfigurationLoads.Add(new AvatarConfigurationLoad(ViewID, position, url));
+        CreateNewAvatar(url, position);
     }
 }
