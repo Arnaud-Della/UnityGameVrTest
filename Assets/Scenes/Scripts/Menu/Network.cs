@@ -63,7 +63,6 @@ public class Network : MonoBehaviourPunCallbacks
     {
         Debug.Log("Un nouveau joueur vient de se connecter : ");
         Debug.Log("Il y a " + PhotonNetwork.CurrentRoom.PlayerCount + " joueurs dans la room");
-        JoinTheRoom();
         Perturbation();
     }
 
@@ -71,7 +70,7 @@ public class Network : MonoBehaviourPunCallbacks
 
     private void JoinTheRoom()
     {
-        SceneManager.LoadScene("Room");
+        SceneManager.LoadScene("Jeux");
     }
     public int GetNbPlayer()
     {
@@ -80,8 +79,6 @@ public class Network : MonoBehaviourPunCallbacks
 
     public event EventHandler SomethingHappened;
 
-    public void Perturbation()
-    {
-        SomethingHappened.Invoke(this, EventArgs.Empty);
-    }
+    public void Perturbation() =>
+        SomethingHappened?.Invoke(this, EventArgs.Empty);
 }
