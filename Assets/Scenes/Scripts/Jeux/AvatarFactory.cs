@@ -136,7 +136,7 @@ public class AvatarFactory : MonoBehaviour
         AvatarPhotonView.ObservedComponents = new List<Component>() { avatarPhotonTransformView };
 
         
-        if (!(IsMyOwnAvatar ^ AvatarStampToCreate.Count == 0))
+        if (IsMyOwnAvatar)
         {
             Debug.LogWarning($"Je cree mon propre Avatar {Url}");
 
