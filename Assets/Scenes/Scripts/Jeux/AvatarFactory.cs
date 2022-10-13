@@ -24,7 +24,7 @@ public class AvatarConfigurationLoad
 public class AvatarFactory : MonoBehaviourPunCallbacks
 {
     private string avatarURL;
-    private GameObject avatar;
+    private GameObject MyAvatar;
     private List<Transform> HumanBones;
     public RuntimeAnimatorController ControllerAnimator;
     public Avatar SqueletteAvatarAnimator;
@@ -60,7 +60,7 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
         Debug.Log($"Avatar loaded");
 
         // On recupere le gameobject de l'avatar qui vient d'etre creer
-        avatar = args.Avatar;
+        GameObject avatar = args.Avatar;
         //avatar.name =  Guid.NewGuid().ToString();
         avatar.transform.position = position;
         GameObject Casque = GameObject.Find("Casque");
@@ -166,6 +166,8 @@ public class AvatarFactory : MonoBehaviourPunCallbacks
             VRRigScript.turnSmoothness = 3;
             IsMine = !IsMine;
             MyIDAvatar = AvatarPhotonView.ViewID;
+            IsMine = !IsMine;
+            MyAvatar = avatar;
             photonView.RPC("Sync", RpcTarget.Others, MyIDAvatar, new Vector3(0, 0, 0), avatarURL);
         }
         else if (avatarConfigurationLoads.Count > 0)
