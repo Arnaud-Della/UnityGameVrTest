@@ -23,7 +23,7 @@ public class AvatarFactory : MonoBehaviour
     private void Start()
     {
         Url = Network.Url;
-        Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
+        Debug.Log(Url);
         CreateNewAvatar(Url);
     }
 
@@ -139,6 +139,7 @@ public class AvatarFactory : MonoBehaviour
         
         if (IsMyOwnAvatar && AvatarStampToCreate.Count == 0)
         {
+            Debug.LogWarning("Je cree mon propre Avatar");
             // Aligne transform du Casque et des Manettes du VR avec l'avatar
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
@@ -169,6 +170,8 @@ public class AvatarFactory : MonoBehaviour
             MyAvatarConfiguration = new AvatarConfiguration(AvatarPhotonView.ViewID, Vector3.zero, Url, avatar);
             IsMyOwnAvatar = false;
 
+            //Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
+
             // Creation de mon Avatar chez les autres joueur
             photonView.RPC("Sync", RpcTarget.Others, MyAvatarConfiguration.ViewID, Vector3.zero, Url);
         }
@@ -184,8 +187,8 @@ public class AvatarFactory : MonoBehaviour
 
 
         // Finalisation de la Creation de l'avatar
-        animator.avatar = SqueletteAvatarAnimator;
-        animator.runtimeAnimatorController = ControllerAnimator;
+        animator.avatar = null;
+        animator.runtimeAnimatorController = null;
         rigBuilder.Build();
     }
 
