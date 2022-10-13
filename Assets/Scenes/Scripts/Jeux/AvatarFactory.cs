@@ -236,6 +236,7 @@ public class AvatarFactory : MonoBehaviour
     [PunRPC]
     protected virtual void Sync(int ViewID, Vector3 position, string url)
     {
+        Debug.Log($"{MyViewID}, {MyAvatar.transform.position}, {avatarURL}");
         avatarConfigurationLoads.Add(new AvatarConfigurationLoad(ViewID, position, url));
         CreateNewAvatar(url, position);
     }
