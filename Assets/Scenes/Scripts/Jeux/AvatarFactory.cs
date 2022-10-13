@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using ReadyPlayerMe;
 using System;
 using System.Collections;
@@ -20,7 +21,7 @@ public class AvatarConfigurationLoad
     }
 }
 
-public class AvatarFactory : MonoBehaviour
+public class AvatarFactory : MonoBehaviourPunCallbacks
 {
     private string avatarURL;
     private GameObject avatar;
@@ -29,15 +30,16 @@ public class AvatarFactory : MonoBehaviour
     public Avatar SqueletteAvatarAnimator;
     private Network network;
     private Vector3 position;
-    private PhotonView photonView;
+    //private PhotonView photonView;
 
     private List<AvatarConfigurationLoad> avatarConfigurationLoads;
     private bool IsMine = true;
+    private int MyIDAvatar;
 
     private void Start()
     {
         avatarConfigurationLoads = new List<AvatarConfigurationLoad>();
-        photonView = this.GetComponent<PhotonView>();
+        //photonView = this.GetComponent<PhotonView>();
         network = FindObjectOfType<Network>();
         avatarURL = network.Url;
         CreateNewAvatar(avatarURL, Vector3.zero);
@@ -163,7 +165,8 @@ public class AvatarFactory : MonoBehaviour
             VRRigScript.rightHand = VRMapRightHand;
             VRRigScript.turnSmoothness = 3;
             IsMine = !IsMine;
-            photonView.RPC("Sync", RpcTarget.Others, AvatarPhotonView.ViewID, new Vector3(0, 0, 0), avatarURL);
+            MyIDAvatar = AvatarPhotonView.ViewID;
+            photonView.RPC("Sync", RpcTarget.Others, MyIDAvatar, new Vector3(0, 0, 0), avatarURL);
         }
         else if (avatarConfigurationLoads.Count > 0)
         {
@@ -229,4 +232,11 @@ public class AvatarFactory : MonoBehaviour
         avatarConfigurationLoads.Add(new AvatarConfigurationLoad(ViewID, position, url));
         CreateNewAvatar(url, position);
     }
+
+    #region Pun Callbacks
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        photonView.RPC("Sync", RpcTarget.Others, MyIDAvatar, new Vector3(0, 0, 0), avatarURL);
+    }
+    #endregion
 }
