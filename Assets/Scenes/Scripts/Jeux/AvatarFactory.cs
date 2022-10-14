@@ -67,10 +67,13 @@ public class AvatarFactory : MonoBehaviour
         GameObject TeteContrainte = addNewNode(Rig, "TeteContrainte");
         MultiParentConstraint multiParentConstrainTeteContrainte = TeteContrainte.AddComponent<MultiParentConstraint>();
 
-        // PhotonConfig
+        // Main PhotonConfig
         PhotonView AvatarPhotonView = avatar.AddComponent<PhotonView>();
         PhotonTransformView avatarPhotonTransformView = avatar.AddComponent<PhotonTransformView>();
 
+        // Recurrence PhotonConfig
+        PhotonView tetePhotonView = TeteContrainte.AddComponent<PhotonView>();
+        PhotonTransformView tetePhotonTransformView = TeteContrainte.AddComponent<PhotonTransformView>();
 
         //////////////////////////// Declaration des variables /////////////////////////////////
 
@@ -129,13 +132,21 @@ public class AvatarFactory : MonoBehaviour
         TeteContrainte.transform.rotation = HumanBones[10].transform.rotation;
 
 
-        // Photon Configuration
+        // Main Photon Configuration
         avatarPhotonTransformView.m_SynchronizePosition = true;
         avatarPhotonTransformView.m_SynchronizeRotation = true;
         avatarPhotonTransformView.m_UseLocal = true;
         AvatarPhotonView.ObservedComponents = new List<Component>() { avatarPhotonTransformView };
 
-        
+        // Recurrence Photon Configuration
+        tetePhotonTransformView.m_SynchronizePosition = true;
+        tetePhotonTransformView.m_SynchronizeRotation = true;
+        tetePhotonTransformView.m_UseLocal = true;
+        tetePhotonView.ObservedComponents = new List<Component>() { tetePhotonTransformView };
+
+
+
+
         if (IsMyOwnAvatar)
         {
             Debug.LogWarning($"Je cree mon propre Avatar {Url}");
@@ -165,6 +176,9 @@ public class AvatarFactory : MonoBehaviour
 
             // Allocation d'un ViewID pour mon avatar
             PhotonNetwork.AllocateViewID(AvatarPhotonView);
+
+            // Allocation des ViewID Recurrence
+            PhotonNetwork.AllocateViewID(tetePhotonView);
 
             // Recuperation de la configuration de mon avatar
             MyAvatarConfiguration = new AvatarConfiguration(AvatarPhotonView.ViewID, Vector3.zero, Url, avatar);
