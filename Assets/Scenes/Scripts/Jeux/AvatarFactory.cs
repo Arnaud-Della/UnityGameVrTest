@@ -153,7 +153,7 @@ public class AvatarFactory : MonoBehaviour, IPunObservable
             moveScript.ManetteGauche = ManetteGauche;
 
             // Configuration du script de suivit du Casque et des Manettes liées aux mains et à la tete du joueur
-            VRRig VRRigScript = avatar.AddComponent<VRRig>();
+            VRRig2 VRRigScript = avatar.AddComponent<VRRig2>();
             VRRigScript.headConstraint = TeteContrainte.transform;
             VRMap VRMapLeftHand = new VRMap(ManetteGauche.transform, targetGauche.transform, Vector3.zero, Vector3.zero);
             VRMap VRMapRightHand = new VRMap(ManetteDroite.transform, targetDroit.transform, Vector3.zero, Vector3.zero);
