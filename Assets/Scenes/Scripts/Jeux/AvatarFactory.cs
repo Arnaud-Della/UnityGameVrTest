@@ -79,6 +79,7 @@ public class AvatarFactory : MonoBehaviour
         //////////////////////////// Declaration des variables /////////////////////////////////
 
         // Avatar
+        avatar.name = Guid.NewGuid().ToString();
         rigBuilder.layers.Clear();
         rigBuilder.layers.Add(new RigLayer(rigComponent));
         GetAllHumanoidBones(animator);
