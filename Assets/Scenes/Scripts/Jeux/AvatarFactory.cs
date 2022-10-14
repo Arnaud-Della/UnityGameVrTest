@@ -181,6 +181,7 @@ public class AvatarFactory : MonoBehaviour
             // Creation de mon Avatar chez les autres joueur
             photonView.RPC("Sync", RpcTarget.Others, MyAvatarConfiguration.ViewID, Vector3.zero, Url);
 
+            // Ajout de l'evenement SyncWithNewPlayer
             Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
         }
         else if (AvatarStampToCreate.Count > 0)
@@ -193,8 +194,14 @@ public class AvatarFactory : MonoBehaviour
         }
 
 
+        // Finalisation de la Creation de l'avatar
+        animator.avatar = SqueletteAvatarAnimator;
+        animator.runtimeAnimatorController = ControllerAnimator;
+        rigBuilder.Build();
 
-        
+
+
+
     }
 
     [PunRPC]
