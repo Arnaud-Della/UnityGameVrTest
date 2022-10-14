@@ -201,6 +201,7 @@ public class AvatarFactory : MonoBehaviour
                     new GameObjectConfig(AvatarPhotonView.ViewID, MyAvatar.transform.position, MyAvatar.transform.rotation),
                     new GameObjectConfig(tetePhotonView.ViewID, MyTete.transform.position, MyTete.transform.rotation)
             );
+            
             photonView.RPC("Sync", RpcTarget.Others, JsonConvert.SerializeObject(conf));
 
             // Ajout de l'evenement SyncWithNewPlayer
@@ -247,7 +248,7 @@ public class AvatarFactory : MonoBehaviour
                     new GameObjectConfig(MyAvatar.GetPhotonView().ViewID, MyAvatar.transform.position, MyAvatar.transform.rotation),
                     new GameObjectConfig(MyTete.GetPhotonView().ViewID, MyTete.transform.position, MyTete.transform.rotation)
         );
-        photonView.RPC("Sync", args.player, conf);
+        photonView.RPC("Sync", args.player, JsonConvert.SerializeObject(conf));
     }
     private GameObject addNewNode(GameObject parentOb, string name)
     {
