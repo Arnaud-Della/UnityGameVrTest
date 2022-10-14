@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.UIElements;
 
-public class AvatarFactory : MonoBehaviour
+public class AvatarFactory : MonoBehaviour, IPunObservable
 {
     public GameObject Casque;
     public GameObject ManetteDroite;
@@ -242,6 +242,22 @@ public class AvatarFactory : MonoBehaviour
 
         }
         return HumanBones.ToArray();
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            /*stream.SendNext(x);
+            stream.SendNext(y);
+            stream.SendNext(z);*/
+        }
+        else
+        {
+            /*x = (int)stream.ReceiveNext();
+            y = (int)stream.ReceiveNext();
+            z = (int)stream.ReceiveNext();*/
+        }
     }
 }
 
