@@ -20,6 +20,8 @@ public class AvatarFactory : MonoBehaviour
     private List<AvatarConfiguration> AvatarStampToCreate = new List<AvatarConfiguration>();
     private GameObject MyAvatar;
     private GameObject MyTete;
+    private GameObject MyBrasDroit;
+    private GameObject MyBrasGauche;
     private bool IsMyOwnAvatar = true;
     private string Url;
 
@@ -78,10 +80,19 @@ public class AvatarFactory : MonoBehaviour
         PhotonTransformView avatarPhotonTransformView = avatar.AddComponent<PhotonTransformView>();
 
         // Recurrence PhotonConfig
+        // Tete
         PhotonView tetePhotonView = TeteContrainte.AddComponent<PhotonView>();
         PhotonTransformView tetePhotonTransformView = TeteContrainte.AddComponent<PhotonTransformView>();
+        // Bras Droit
+        PhotonView brasDroitPhotonView = brasDroit.AddComponent<PhotonView>();
+        PhotonTransformView brasDroitPhotonTransformView = brasDroit.AddComponent<PhotonTransformView>();
+        // Bras Gauche
+        PhotonView brasGauchePhotonView = brasGauche.AddComponent<PhotonView>();
+        PhotonTransformView brasGauchePhotonTransformView = brasGauche.AddComponent<PhotonTransformView>();
+
 
         //////////////////////////// Declaration des variables /////////////////////////////////
+
 
         // Avatar
         avatar.name = Guid.NewGuid().ToString();
@@ -190,6 +201,8 @@ public class AvatarFactory : MonoBehaviour
             // Recuperation de la configuration de mon avatar
             MyAvatar = avatar;
             MyTete = TeteContrainte;
+            MyBrasDroit = brasDroit;
+            MyBrasGauche = brasGauche;
             IsMyOwnAvatar = false;
 
             Debug.LogWarning("L'Avatar a été correctement creer");
@@ -199,7 +212,9 @@ public class AvatarFactory : MonoBehaviour
             var conf = new AvatarConfiguration(
                     Url,
                     new GameObjectConfig(AvatarPhotonView.ViewID, MyAvatar.transform.position, MyAvatar.transform.rotation),
-                    new GameObjectConfig(tetePhotonView.ViewID, MyTete.transform.position, MyTete.transform.rotation)
+                    new GameObjectConfig(tetePhotonView.ViewID, MyTete.transform.position, MyTete.transform.rotation),
+                    new GameObjectConfig(brasDroitPhotonView.ViewID, MyBrasDroit.transform.position, MyBrasDroit.transform.rotation),
+                    new GameObjectConfig(brasGauchePhotonView.ViewID, MyBrasGauche.transform.position, MyBrasGauche.transform.rotation)
             );
             
             photonView.RPC("Sync", RpcTarget.Others, JsonConvert.SerializeObject(conf));
@@ -246,7 +261,9 @@ public class AvatarFactory : MonoBehaviour
         var conf = new AvatarConfiguration(
                     Url,
                     new GameObjectConfig(MyAvatar.GetPhotonView().ViewID, MyAvatar.transform.position, MyAvatar.transform.rotation),
-                    new GameObjectConfig(MyTete.GetPhotonView().ViewID, MyTete.transform.position, MyTete.transform.rotation)
+                    new GameObjectConfig(MyTete.GetPhotonView().ViewID, MyTete.transform.position, MyTete.transform.rotation),
+                    new GameObjectConfig(MyBrasDroit.GetPhotonView().ViewID, MyBrasDroit.transform.position, MyBrasDroit.transform.rotation),
+                    new GameObjectConfig(MyBrasGauche.GetPhotonView().ViewID, MyBrasGauche.transform.position, MyBrasGauche.transform.rotation)
         );
         photonView.RPC("Sync", args.player, JsonConvert.SerializeObject(conf));
     }
@@ -290,12 +307,16 @@ public class AvatarConfiguration
     public string AvatarUrl;
     public GameObjectConfig Avatar;
     public GameObjectConfig Tete;
+    public GameObjectConfig MainDroite;
+    public GameObjectConfig MainGauche;
 
-    public AvatarConfiguration(string AvatarUrl, GameObjectConfig Avatar, GameObjectConfig Tete)
+    public AvatarConfiguration(string AvatarUrl, GameObjectConfig Avatar, GameObjectConfig Tete, GameObjectConfig MainDroite, GameObjectConfig MainGauche)
     {
         this.AvatarUrl = AvatarUrl;
         this.Avatar = Avatar;
         this.Tete = Tete;
+        this.MainDroite = MainDroite;
+        this.MainGauche = MainGauche;
     }
 }
 
