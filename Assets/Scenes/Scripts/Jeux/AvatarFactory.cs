@@ -162,6 +162,16 @@ public class AvatarFactory : MonoBehaviour
         tetePhotonTransformView.m_UseLocal = true;
         tetePhotonView.ObservedComponents = new List<Component>() { tetePhotonTransformView };
 
+        brasDroitPhotonTransformView.m_SynchronizePosition = true;
+        brasDroitPhotonTransformView.m_SynchronizeRotation = true;
+        brasDroitPhotonTransformView.m_UseLocal = true;
+        brasDroitPhotonView.ObservedComponents = new List<Component>() { brasDroitPhotonTransformView };
+
+        brasGauchePhotonTransformView.m_SynchronizePosition = true;
+        brasGauchePhotonTransformView.m_SynchronizeRotation = true;
+        brasGauchePhotonTransformView.m_UseLocal = true;
+        brasGauchePhotonView.ObservedComponents = new List<Component>() { brasGauchePhotonTransformView };
+
 
 
 
