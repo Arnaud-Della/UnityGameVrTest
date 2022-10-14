@@ -197,6 +197,8 @@ public class AvatarFactory : MonoBehaviour
 
             // Allocation des ViewID Recurrence
             PhotonNetwork.AllocateViewID(tetePhotonView);
+            PhotonNetwork.AllocateViewID(brasDroitPhotonView);
+            PhotonNetwork.AllocateViewID(brasGauchePhotonView);
 
             // Recuperation de la configuration de mon avatar
             MyAvatar = avatar;
@@ -228,10 +230,19 @@ public class AvatarFactory : MonoBehaviour
             AvatarPhotonView.ViewID = AvatarStampToCreate[0].Avatar.ViewID;
             avatar.transform.position = AvatarStampToCreate[0].Avatar.Position;
             avatar.transform.rotation = AvatarStampToCreate[0].Avatar.Rotation;
+            // Attribution du ViewID et de la position à la tete adverse
             tetePhotonView.ViewID = AvatarStampToCreate[0].Tete.ViewID;
             TeteContrainte.transform.position = AvatarStampToCreate[0].Tete.Position;
             TeteContrainte.transform.rotation = AvatarStampToCreate[0].Tete.Rotation;
-            
+            // Attribution du ViewID et de la position aux mains adverse
+            brasDroitPhotonView.ViewID = AvatarStampToCreate[0].MainDroite.ViewID;
+            brasDroit.transform.position = AvatarStampToCreate[0].MainDroite.Position;
+            brasDroit.transform.rotation = AvatarStampToCreate[0].MainDroite.Rotation;
+
+            brasGauchePhotonView.ViewID = AvatarStampToCreate[0].MainGauche.ViewID;
+            brasGauche.transform.position = AvatarStampToCreate[0].MainGauche.Position;
+            brasGauche.transform.rotation = AvatarStampToCreate[0].MainGauche.Rotation;
+
             // Suppression des informations de configuration de cette avatar du buffer
             AvatarStampToCreate.RemoveAt(0);
         }
