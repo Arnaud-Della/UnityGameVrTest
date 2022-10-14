@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Photon.Pun;
 using ReadyPlayerMe;
 using System;
@@ -17,7 +18,8 @@ public class AvatarFactory : MonoBehaviour
 
     private List<Transform> HumanBones;
     private List<AvatarConfiguration> AvatarStampToCreate = new List<AvatarConfiguration>();
-    private AvatarConfiguration MyAvatarConfiguration;
+    private GameObject MyAvatar;
+    private GameObject MyTete;
     private bool IsMyOwnAvatar = true;
     private string Url;
 
@@ -186,14 +188,20 @@ public class AvatarFactory : MonoBehaviour
             PhotonNetwork.AllocateViewID(tetePhotonView);
 
             // Recuperation de la configuration de mon avatar
-            MyAvatarConfiguration = new AvatarConfiguration(AvatarPhotonView.ViewID, Vector3.zero, Url, avatar);
+            MyAvatar = avatar;
+            MyTete = TeteContrainte;
             IsMyOwnAvatar = false;
 
             Debug.LogWarning("L'Avatar a été correctement creer");
             Debug.LogWarning($"INFO : {AvatarPhotonView.ViewID}, {avatar.transform.position}");
 
             // Creation de mon Avatar chez les autres joueur
-            photonView.RPC("Sync", RpcTarget.Others, MyAvatarConfiguration.ViewID, Vector3.zero, Url);
+            var conf = new AvatarConfiguration(
+                    Url,
+                    new GameObjectConfig(AvatarPhotonView.ViewID, MyAvatar.transform.position, MyAvatar.transform.rotation),
+                    new GameObjectConfig(tetePhotonView.ViewID, MyTete.transform.position, MyTete.transform.rotation)
+            );
+            photonView.RPC("Sync", RpcTarget.Others, JsonConvert.SerializeObject(conf));
 
             // Ajout de l'evenement SyncWithNewPlayer
             Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
@@ -201,8 +209,13 @@ public class AvatarFactory : MonoBehaviour
         else if (AvatarStampToCreate.Count > 0)
         {
             // Attribution du ViewID et de la position à l'avatar adverse 
-            AvatarPhotonView.ViewID = AvatarStampToCreate[0].ViewID;
-            avatar.transform.position = AvatarStampToCreate[0].Position;
+            AvatarPhotonView.ViewID = AvatarStampToCreate[0].Avatar.ViewID;
+            avatar.transform.position = AvatarStampToCreate[0].Avatar.Position;
+            avatar.transform.rotation = AvatarStampToCreate[0].Avatar.Rotation;
+            tetePhotonView.ViewID = AvatarStampToCreate[0].Tete.ViewID;
+            TeteContrainte.transform.position = AvatarStampToCreate[0].Tete.Position;
+            TeteContrainte.transform.rotation = AvatarStampToCreate[0].Tete.Rotation;
+            
             // Suppression des informations de configuration de cette avatar du buffer
             AvatarStampToCreate.RemoveAt(0);
         }
@@ -219,18 +232,22 @@ public class AvatarFactory : MonoBehaviour
     }
 
     [PunRPC]
-    protected virtual void Sync(int ViewID, Vector3 position, string url)
+    protected virtual void Sync(string stringConf)
     {
-        Debug.LogWarning($"SYNC : {ViewID}, {position}, {url}");
-        AvatarConfiguration avatarConfiguration = new AvatarConfiguration(ViewID, position, url);
-        AvatarStampToCreate.Add(avatarConfiguration);
-        CreateNewAvatar(url);
+        AvatarConfiguration conf = JsonConvert.DeserializeObject<AvatarConfiguration>(stringConf);
+        AvatarStampToCreate.Add(conf);
+        CreateNewAvatar(conf.AvatarUrl);
     }
 
     public void SyncWithNewPlayer(object sender, EventPlayer args)
     {
         Debug.LogWarning("Un nouveau joueur vient d'arriver => event");
-        photonView.RPC("Sync", args.player, MyAvatarConfiguration.ViewID, MyAvatarConfiguration.GetAvatar.transform.position, MyAvatarConfiguration.Url);
+        var conf = new AvatarConfiguration(
+                    Url,
+                    new GameObjectConfig(MyAvatar.GetPhotonView().ViewID, MyAvatar.transform.position, MyAvatar.transform.rotation),
+                    new GameObjectConfig(MyTete.GetPhotonView().ViewID, MyTete.transform.position, MyTete.transform.rotation)
+        );
+        photonView.RPC("Sync", args.player, conf);
     }
     private GameObject addNewNode(GameObject parentOb, string name)
     {
@@ -269,16 +286,28 @@ public class AvatarFactory : MonoBehaviour
 [System.Serializable]
 public class AvatarConfiguration
 {
+    public string AvatarUrl;
+    public GameObjectConfig Avatar;
+    public GameObjectConfig Tete;
+
+    public AvatarConfiguration(string AvatarUrl, GameObjectConfig Avatar, GameObjectConfig Tete)
+    {
+        this.AvatarUrl = AvatarUrl;
+        this.Avatar = Avatar;
+        this.Tete = Tete;
+    }
+}
+
+public class GameObjectConfig
+{
     public int ViewID;
-    public Vector3 Position;
-    public string Url;
-    private GameObject Avatar;
-    public GameObject GetAvatar { get => Avatar;}
-    public AvatarConfiguration(int ViewID, Vector3 Position, string Url, GameObject Avatar = null)
+    public SerializableVector3 Position;
+    public SerializableQuaternion Rotation;
+
+    public GameObjectConfig(int ViewID, SerializableVector3 Position, SerializableQuaternion Rotation)
     {
         this.ViewID = ViewID;
         this.Position = Position;
-        this.Url = Url;
-        this.Avatar = Avatar;
+        this.Rotation = Rotation;
     }
 }
