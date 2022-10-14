@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class MoveScript : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
+        this.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer);
     }
 
     // Update is called once per frame
