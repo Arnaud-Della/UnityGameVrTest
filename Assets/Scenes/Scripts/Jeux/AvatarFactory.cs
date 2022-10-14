@@ -170,11 +170,6 @@ public class AvatarFactory : MonoBehaviour
             MyAvatarConfiguration = new AvatarConfiguration(AvatarPhotonView.ViewID, Vector3.zero, Url, avatar);
             IsMyOwnAvatar = false;
 
-            // Finalisation de la Creation de l'avatar
-            animator.avatar = SqueletteAvatarAnimator;
-            animator.runtimeAnimatorController = ControllerAnimator;
-            rigBuilder.Build();
-
             Debug.LogWarning("L'Avatar a été correctement creer");
             Debug.LogWarning($"INFO : {AvatarPhotonView.ViewID}, {avatar.transform.position}");
 
@@ -195,8 +190,8 @@ public class AvatarFactory : MonoBehaviour
 
 
         // Finalisation de la Creation de l'avatar
-        animator.avatar = SqueletteAvatarAnimator;
-        animator.runtimeAnimatorController = ControllerAnimator;
+        animator.avatar = null;
+        animator.runtimeAnimatorController = null;
         rigBuilder.Build();
 
 
