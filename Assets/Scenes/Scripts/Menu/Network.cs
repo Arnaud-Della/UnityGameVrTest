@@ -21,14 +21,7 @@ public class Network : MonoBehaviourPunCallbacks
             RoomName = roomName;
         }
 
-        if (url == string.Empty)
-        {
-            Url = "https://d1a370nemizbjq.cloudfront.net/209a1bc2-efed-46c5-9dfd-edc8a1d9cbe4.glb";
-        }
-        else
-        {
-            Url = url;
-        }
+        Url = url;
         
         PhotonNetwork.ConnectUsingSettings();
     }

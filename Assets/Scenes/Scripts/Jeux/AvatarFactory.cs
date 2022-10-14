@@ -24,6 +24,10 @@ public class AvatarFactory : MonoBehaviour
     private void Start()
     {
         Url = Network.Url;
+        if (Url == String.Empty)
+        {
+            Url = "https://api.readyplayer.me/v1/avatars/6349385f1ae70b92586e4a8d.glb";
+        }
         Debug.Log(Url);
         CreateNewAvatar(Url);
     }
