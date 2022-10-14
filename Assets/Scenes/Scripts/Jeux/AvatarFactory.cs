@@ -24,6 +24,10 @@ public class AvatarFactory : MonoBehaviour
     private void Start()
     {
         Url = Network.Url;
+        if (Url == String.Empty)
+        {
+            Url = "https://api.readyplayer.me/v1/avatars/6349385f1ae70b92586e4a8d.glb";
+        }
         Debug.Log(Url);
         CreateNewAvatar(Url);
     }
@@ -78,6 +82,7 @@ public class AvatarFactory : MonoBehaviour
         //////////////////////////// Declaration des variables /////////////////////////////////
 
         // Avatar
+        avatar.name = Guid.NewGuid().ToString();
         rigBuilder.layers.Clear();
         rigBuilder.layers.Add(new RigLayer(rigComponent));
         GetAllHumanoidBones(animator);
@@ -204,9 +209,12 @@ public class AvatarFactory : MonoBehaviour
 
 
         // Finalisation de la Creation de l'avatar
-        animator.avatar = SqueletteAvatarAnimator;
-        animator.runtimeAnimatorController = ControllerAnimator;
+        //animator.avatar = null;
+        //animator.runtimeAnimatorController = null;
         rigBuilder.Build();
+
+
+
 
     }
 
