@@ -245,10 +245,11 @@ public class AvatarFactory : MonoBehaviour
             TeteContrainte.transform.position = AvatarStampToCreate[0].Tete.Position;
             TeteContrainte.transform.rotation = AvatarStampToCreate[0].Tete.Rotation;
             // Attribution du ViewID et de la position aux mains adverse
+            // Target Droit
             targetDroitPhotonView.ViewID = AvatarStampToCreate[0].MainDroite.ViewID;
             targetDroit.transform.position = AvatarStampToCreate[0].MainDroite.Position;
             targetDroit.transform.rotation = AvatarStampToCreate[0].MainDroite.Rotation;
-
+            // Target Gauche
             targetGauchePhotonView.ViewID = AvatarStampToCreate[0].MainGauche.ViewID;
             targetGauche.transform.position = AvatarStampToCreate[0].MainGauche.Position;
             targetGauche.transform.rotation = AvatarStampToCreate[0].MainGauche.Rotation;
