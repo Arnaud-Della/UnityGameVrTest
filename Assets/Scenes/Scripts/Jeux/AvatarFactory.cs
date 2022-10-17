@@ -17,6 +17,8 @@ public class AvatarFactory : MonoBehaviour
     public Avatar SqueletteAvatarAnimator;
     public PhotonView photonView;
     public PhysicMaterial physicMaterial;
+    public Vector3 InitPosition;
+    public Quaternion InitRotation;
 
     private List<Transform> HumanBones;
     private List<AvatarConfiguration> AvatarStampToCreate = new List<AvatarConfiguration>();
@@ -110,6 +112,8 @@ public class AvatarFactory : MonoBehaviour
 
         // Avatar
         avatar.name = Guid.NewGuid().ToString();
+        avatar.transform.position = InitPosition;
+        avatar.transform.rotation = InitRotation;
         rigBuilder.layers.Clear();
         rigBuilder.layers.Add(new RigLayer(rigComponent));
         GetAllHumanoidBones(animator);
