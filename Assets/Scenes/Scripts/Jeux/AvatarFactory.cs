@@ -16,6 +16,7 @@ public class AvatarFactory : MonoBehaviour
     public RuntimeAnimatorController ControllerAnimator;
     public Avatar SqueletteAvatarAnimator;
     public PhotonView photonView;
+    public PhysicMaterial physicMaterial;
 
     private List<Transform> HumanBones;
     private List<AvatarConfiguration> AvatarStampToCreate = new List<AvatarConfiguration>();
@@ -99,6 +100,10 @@ public class AvatarFactory : MonoBehaviour
         PhotonVoiceView photonVoiceView = avatar.AddComponent<PhotonVoiceView>();
         AudioSource audioSource = avatar.AddComponent<AudioSource>();
         Speaker speaker = avatar.AddComponent<Speaker>();
+
+        // Capsule collider + RigideBody => Hit box
+        CapsuleCollider capsuleCollider = avatar.AddComponent<CapsuleCollider>();
+        Rigidbody rigidbody = avatar.AddComponent<Rigidbody>();
 
         //////////////////////////// Declaration des variables /////////////////////////////////
 
@@ -191,6 +196,22 @@ public class AvatarFactory : MonoBehaviour
         photonVoiceView.UsePrimaryRecorder = true;
         photonVoiceView.SetupDebugSpeaker = true;
         audioSource.loop = true;
+
+        // Hit Box Configuration
+        // Capsule Collider
+        capsuleCollider.material = physicMaterial;
+        capsuleCollider.center = new Vector3(0, 0.84f, 0);
+        capsuleCollider.radius = 0.5f;
+        capsuleCollider.height = 1.64f;
+        capsuleCollider.direction = 1;
+        // RigideBody
+        rigidbody.mass = 70;
+        rigidbody.drag = 0;
+        rigidbody.angularDrag = 0.05f;
+        rigidbody.useGravity = true;
+        rigidbody.isKinematic = false;
+        rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+
 
 
         if (IsMyOwnAvatar) // && AvatarStampToCreate.Count == 0
