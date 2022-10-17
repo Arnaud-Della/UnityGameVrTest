@@ -516,6 +516,8 @@ MonoBehaviour:
   SqueletteAvatarAnimator: {fileID: 9000000, guid: ba5173a85368a4f4eb45fbc497be292c, type: 2}
   photonView: {fileID: 1766948943}
   physicMaterial: {fileID: 13400000, guid: a6d3218b5c145504b9e1f5e792365428, type: 2}
+  InitPosition: {x: 0, y: 0, z: 0}
+  InitRotation: 180
 --- !u!114 &1766948943
 MonoBehaviour:
   m_ObjectHideFlags: 0
