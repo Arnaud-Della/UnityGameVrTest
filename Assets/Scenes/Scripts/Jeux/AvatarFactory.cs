@@ -261,7 +261,7 @@ public class AvatarFactory : MonoBehaviour
 
         // Finalisation de la Creation de l'avatar
         //animator.avatar = null;
-        //animator.runtimeAnimatorController = null;
+        animator.runtimeAnimatorController = ControllerAnimator;
         rigBuilder.Build();
 
 
