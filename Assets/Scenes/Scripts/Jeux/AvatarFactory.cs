@@ -226,6 +226,9 @@ public class AvatarFactory : MonoBehaviour
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
             ManetteGauche.transform.position = HumanBones[17].transform.position;
+            Casque.transform.rotation = HumanBones[10].transform.rotation;
+            ManetteDroite.transform.rotation = HumanBones[18].transform.rotation;
+            ManetteGauche.transform.rotation = HumanBones[17].transform.rotation;
 
             // Configuration du script de deplacement
             MoveScript moveScript = avatar.AddComponent<MoveScript>();
