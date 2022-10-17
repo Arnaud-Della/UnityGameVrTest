@@ -20,8 +20,10 @@ public class AvatarFactory : MonoBehaviour
     private List<AvatarConfiguration> AvatarStampToCreate = new List<AvatarConfiguration>();
     private GameObject MyAvatar;
     private GameObject MyTete;
-    private GameObject MyBrasDroit;
-    private GameObject MyBrasGauche;
+    private GameObject MyBrasDroitTarget;
+    private GameObject MyBrasGaucheTarget;
+    private GameObject MyBrasDroitHint;
+    private GameObject MyBrasGaucheHint;
     private bool IsMyOwnAvatar = true;
     private string Url;
 
@@ -83,13 +85,18 @@ public class AvatarFactory : MonoBehaviour
         // Tete
         PhotonView tetePhotonView = TeteContrainte.AddComponent<PhotonView>();
         PhotonTransformView tetePhotonTransformView = TeteContrainte.AddComponent<PhotonTransformView>();
-        // Bras Droit
+        // Bras Droit Target 
         PhotonView targetDroitPhotonView = targetDroit.AddComponent<PhotonView>();
         PhotonTransformView targetDroitPhotonTransformView = targetDroit.AddComponent<PhotonTransformView>();
-        // Bras Gauche
+        // Bras Gauche Target
         PhotonView targetGauchePhotonView = targetGauche.AddComponent<PhotonView>();
         PhotonTransformView targetGauchePhotonTransformView = targetGauche.AddComponent<PhotonTransformView>();
-
+        // Bras Droit Hint
+        PhotonView hintDroitPhotonView = hintDroit.AddComponent<PhotonView>();
+        PhotonTransformView hintDroitPhotonTransformView = hintDroit.AddComponent<PhotonTransformView>();
+        // Bras Gauche Hint
+        PhotonView hintGauchePhotonView = hintGauche.AddComponent<PhotonView>();
+        PhotonTransformView hintGauchePhotonTransformView = hintGauche.AddComponent<PhotonTransformView>();
 
         //////////////////////////// Declaration des variables /////////////////////////////////
 
@@ -157,21 +164,31 @@ public class AvatarFactory : MonoBehaviour
         AvatarPhotonView.ObservedComponents = new List<Component>() { avatarPhotonTransformView };
 
         // Recurrence Photon Configuration
+        // Tete
         tetePhotonTransformView.m_SynchronizePosition = true;
         tetePhotonTransformView.m_SynchronizeRotation = true;
         tetePhotonTransformView.m_UseLocal = true;
         tetePhotonView.ObservedComponents = new List<Component>() { tetePhotonTransformView };
-
+        // Bras Droit Target
         targetDroitPhotonTransformView.m_SynchronizePosition = true;
         targetDroitPhotonTransformView.m_SynchronizeRotation = true;
         targetDroitPhotonTransformView.m_UseLocal = true;
         targetDroitPhotonView.ObservedComponents = new List<Component>() { targetDroitPhotonTransformView };
-
+        // Bras Gauche Target
         targetGauchePhotonTransformView.m_SynchronizePosition = true;
         targetGauchePhotonTransformView.m_SynchronizeRotation = true;
         targetGauchePhotonTransformView.m_UseLocal = true;
         targetGauchePhotonView.ObservedComponents = new List<Component>() { targetGauchePhotonTransformView };
-
+        // Bras Droit Hint
+        hintDroitPhotonTransformView.m_SynchronizePosition = true;
+        hintDroitPhotonTransformView.m_SynchronizeRotation = true;
+        hintDroitPhotonTransformView.m_UseLocal = true;
+        hintDroitPhotonView.ObservedComponents = new List<Component>() { hintDroitPhotonTransformView };
+        // Bras Gauche Hint
+        hintGauchePhotonTransformView.m_SynchronizePosition = true;
+        hintGauchePhotonTransformView.m_SynchronizeRotation = true;
+        hintGauchePhotonTransformView.m_UseLocal = true;
+        hintGauchePhotonView.ObservedComponents = new List<Component>() { hintGauchePhotonTransformView };
 
 
 
@@ -209,12 +226,16 @@ public class AvatarFactory : MonoBehaviour
             PhotonNetwork.AllocateViewID(tetePhotonView);
             PhotonNetwork.AllocateViewID(targetDroitPhotonView);
             PhotonNetwork.AllocateViewID(targetGauchePhotonView);
+            PhotonNetwork.AllocateViewID(hintDroitPhotonView);
+            PhotonNetwork.AllocateViewID(hintGauchePhotonView);
 
             // Recuperation de la configuration de mon avatar
             MyAvatar = avatar;
             MyTete = TeteContrainte;
-            MyBrasDroit = targetDroit;
-            MyBrasGauche = targetGauche;
+            MyBrasDroitTarget = targetDroit;
+            MyBrasGaucheTarget = targetGauche;
+            MyBrasDroitHint = hintDroit;
+            MyBrasGaucheHint = hintGauche;
             IsMyOwnAvatar = false;
 
             Debug.LogWarning("L'Avatar a été correctement creer");
@@ -225,8 +246,10 @@ public class AvatarFactory : MonoBehaviour
                     Url,
                     new GameObjectConfig(AvatarPhotonView.ViewID, MyAvatar.transform.position, MyAvatar.transform.rotation),
                     new GameObjectConfig(tetePhotonView.ViewID, MyTete.transform.position, MyTete.transform.rotation),
-                    new GameObjectConfig(targetDroitPhotonView.ViewID, MyBrasDroit.transform.position, MyBrasDroit.transform.rotation),
-                    new GameObjectConfig(targetGauchePhotonView.ViewID, MyBrasGauche.transform.position, MyBrasGauche.transform.rotation)
+                    new GameObjectConfig(targetDroitPhotonView.ViewID, MyBrasDroitTarget.transform.position, MyBrasDroitTarget.transform.rotation),
+                    new GameObjectConfig(targetGauchePhotonView.ViewID, MyBrasGaucheTarget.transform.position, MyBrasGaucheTarget.transform.rotation),
+                    new GameObjectConfig(hintDroitPhotonView.ViewID, MyBrasDroitHint.transform.position, MyBrasDroitHint.transform.rotation),
+                    new GameObjectConfig(hintGauchePhotonView.ViewID, MyBrasGaucheHint.transform.position, MyBrasGaucheHint.transform.rotation)
             );
             
             photonView.RPC("Sync", RpcTarget.Others, JsonConvert.SerializeObject(conf));
@@ -245,13 +268,13 @@ public class AvatarFactory : MonoBehaviour
             TeteContrainte.transform.position = AvatarStampToCreate[0].Tete.Position;
             TeteContrainte.transform.rotation = AvatarStampToCreate[0].Tete.Rotation;
             // Attribution du ViewID et de la position aux mains adverse
-            targetDroitPhotonView.ViewID = AvatarStampToCreate[0].MainDroite.ViewID;
-            brasDroit.transform.position = AvatarStampToCreate[0].MainDroite.Position;
-            brasDroit.transform.rotation = AvatarStampToCreate[0].MainDroite.Rotation;
+            targetDroitPhotonView.ViewID = AvatarStampToCreate[0].BrasDroitTarget.ViewID;
+            brasDroit.transform.position = AvatarStampToCreate[0].BrasDroitTarget.Position;
+            brasDroit.transform.rotation = AvatarStampToCreate[0].BrasDroitTarget.Rotation;
 
-            targetGauchePhotonView.ViewID = AvatarStampToCreate[0].MainGauche.ViewID;
-            brasGauche.transform.position = AvatarStampToCreate[0].MainGauche.Position;
-            brasGauche.transform.rotation = AvatarStampToCreate[0].MainGauche.Rotation;
+            targetGauchePhotonView.ViewID = AvatarStampToCreate[0].BrasGaucheTarget.ViewID;
+            brasGauche.transform.position = AvatarStampToCreate[0].BrasGaucheTarget.Position;
+            brasGauche.transform.rotation = AvatarStampToCreate[0].BrasGaucheTarget.Rotation;
 
             // Suppression des informations de configuration de cette avatar du buffer
             AvatarStampToCreate.RemoveAt(0);
@@ -283,8 +306,10 @@ public class AvatarFactory : MonoBehaviour
                     Url,
                     new GameObjectConfig(MyAvatar.GetPhotonView().ViewID, MyAvatar.transform.position, MyAvatar.transform.rotation),
                     new GameObjectConfig(MyTete.GetPhotonView().ViewID, MyTete.transform.position, MyTete.transform.rotation),
-                    new GameObjectConfig(MyBrasDroit.GetPhotonView().ViewID, MyBrasDroit.transform.position, MyBrasDroit.transform.rotation),
-                    new GameObjectConfig(MyBrasGauche.GetPhotonView().ViewID, MyBrasGauche.transform.position, MyBrasGauche.transform.rotation)
+                    new GameObjectConfig(MyBrasDroitTarget.GetPhotonView().ViewID, MyBrasDroitTarget.transform.position, MyBrasDroitTarget.transform.rotation),
+                    new GameObjectConfig(MyBrasGaucheTarget.GetPhotonView().ViewID, MyBrasGaucheTarget.transform.position, MyBrasGaucheTarget.transform.rotation),
+                    new GameObjectConfig(MyBrasDroitHint.GetPhotonView().ViewID, MyBrasDroitHint.transform.position, MyBrasDroitHint.transform.rotation),
+                    new GameObjectConfig(MyBrasGaucheHint.GetPhotonView().ViewID, MyBrasGaucheHint.transform.position, MyBrasGaucheHint.transform.rotation)
         );
         photonView.RPC("Sync", args.player, JsonConvert.SerializeObject(conf));
     }
@@ -328,16 +353,28 @@ public class AvatarConfiguration
     public string AvatarUrl;
     public GameObjectConfig Avatar;
     public GameObjectConfig Tete;
-    public GameObjectConfig MainDroite;
-    public GameObjectConfig MainGauche;
+    public GameObjectConfig BrasDroitTarget;
+    public GameObjectConfig BrasGaucheTarget;
+    public GameObjectConfig BrasDroitHint;
+    public GameObjectConfig BrasGaucheHint;
 
-    public AvatarConfiguration(string AvatarUrl, GameObjectConfig Avatar, GameObjectConfig Tete, GameObjectConfig MainDroite, GameObjectConfig MainGauche)
+    public AvatarConfiguration(
+        string AvatarUrl, 
+        GameObjectConfig Avatar, 
+        GameObjectConfig Tete, 
+        GameObjectConfig BrasDroitTarget, 
+        GameObjectConfig BrasGaucheTarget,
+        GameObjectConfig BrasDroitHint,
+        GameObjectConfig BrasGaucheHint
+        )
     {
         this.AvatarUrl = AvatarUrl;
         this.Avatar = Avatar;
         this.Tete = Tete;
-        this.MainDroite = MainDroite;
-        this.MainGauche = MainGauche;
+        this.BrasDroitTarget = BrasDroitTarget;
+        this.BrasGaucheTarget = BrasGaucheTarget;
+        this.BrasDroitHint = BrasDroitHint;
+        this.BrasGaucheHint = BrasGaucheHint;
     }
 }
 
