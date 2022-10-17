@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -374,7 +374,7 @@ MonoBehaviour:
   Casque: {fileID: 1893122052}
   ManetteDroite: {fileID: 2002875018}
   ManetteGauche: {fileID: 695476957}
-  ControllerAnimator: {fileID: 9100000, guid: b9265456b4d9bc04593468b0675411a8, type: 2}
+  ControllerAnimator: {fileID: 9100000, guid: 79e32698f360e7d47b5c9f5a6061dbda, type: 2}
   SqueletteAvatarAnimator: {fileID: 9000000, guid: ba5173a85368a4f4eb45fbc497be292c, type: 2}
   photonView: {fileID: 1766948943}
 --- !u!114 &1766948943
