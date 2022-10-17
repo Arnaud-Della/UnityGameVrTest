@@ -268,13 +268,23 @@ public class AvatarFactory : MonoBehaviour
             TeteContrainte.transform.position = AvatarStampToCreate[0].Tete.Position;
             TeteContrainte.transform.rotation = AvatarStampToCreate[0].Tete.Rotation;
             // Attribution du ViewID et de la position aux mains adverse
+            // Target Droit
             targetDroitPhotonView.ViewID = AvatarStampToCreate[0].BrasDroitTarget.ViewID;
-            brasDroit.transform.position = AvatarStampToCreate[0].BrasDroitTarget.Position;
-            brasDroit.transform.rotation = AvatarStampToCreate[0].BrasDroitTarget.Rotation;
-
+            targetDroit.transform.position = AvatarStampToCreate[0].BrasDroitTarget.Position;
+            targetDroit.transform.rotation = AvatarStampToCreate[0].BrasDroitTarget.Rotation;
+            // Target Gauche
             targetGauchePhotonView.ViewID = AvatarStampToCreate[0].BrasGaucheTarget.ViewID;
-            brasGauche.transform.position = AvatarStampToCreate[0].BrasGaucheTarget.Position;
-            brasGauche.transform.rotation = AvatarStampToCreate[0].BrasGaucheTarget.Rotation;
+            targetGauche.transform.position = AvatarStampToCreate[0].BrasGaucheTarget.Position;
+            targetGauche.transform.rotation = AvatarStampToCreate[0].BrasGaucheTarget.Rotation;
+            // Attribution du ViewID et de la position aux coudes adverse
+            // Hint Droit
+            hintDroitPhotonView.ViewID = AvatarStampToCreate[0].BrasDroitHint.ViewID;
+            hintDroit.transform.position = AvatarStampToCreate[0].BrasDroitHint.Position;
+            hintDroit.transform.rotation = AvatarStampToCreate[0].BrasDroitHint.Rotation;
+            // Hint Gauche
+            hintGauchePhotonView.ViewID = AvatarStampToCreate[0].BrasGaucheHint.ViewID;
+            hintGauche.transform.position = AvatarStampToCreate[0].BrasGaucheHint.Position;
+            hintGauche.transform.rotation = AvatarStampToCreate[0].BrasGaucheHint.Rotation;
 
             // Suppression des informations de configuration de cette avatar du buffer
             AvatarStampToCreate.RemoveAt(0);
