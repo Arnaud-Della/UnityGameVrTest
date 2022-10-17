@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
-using UnityEngine.UIElements;
+using Photon.Voice.PUN;
+using Photon.Voice.Unity;
 
 public class AvatarFactory : MonoBehaviour
 {
@@ -94,6 +95,10 @@ public class AvatarFactory : MonoBehaviour
         // Photon Animator View
         PhotonAnimatorView avatarAnimatorView = avatar.AddComponent<PhotonAnimatorView>();
 
+        // Photon Voice View
+        PhotonVoiceView photonVoiceView = avatar.AddComponent<PhotonVoiceView>();
+        AudioSource audioSource = avatar.AddComponent<AudioSource>();
+        Speaker speaker = avatar.AddComponent<Speaker>();
 
         //////////////////////////// Declaration des variables /////////////////////////////////
 
@@ -165,22 +170,27 @@ public class AvatarFactory : MonoBehaviour
         AvatarPhotonView.ObservedComponents = new List<Component>() { avatarPhotonTransformView, avatarAnimatorView };
 
         // Recurrence Photon Configuration
+        // Tete
         tetePhotonTransformView.m_SynchronizePosition = true;
         tetePhotonTransformView.m_SynchronizeRotation = true;
         tetePhotonTransformView.m_UseLocal = true;
         tetePhotonView.ObservedComponents = new List<Component>() { tetePhotonTransformView };
-
+        // Target Droit
         targetDroitPhotonTransformView.m_SynchronizePosition = true;
         targetDroitPhotonTransformView.m_SynchronizeRotation = true;
         targetDroitPhotonTransformView.m_UseLocal = true;
         targetDroitPhotonView.ObservedComponents = new List<Component>() { targetDroitPhotonTransformView };
-
+        // Target Gauche
         targetGauchePhotonTransformView.m_SynchronizePosition = true;
         targetGauchePhotonTransformView.m_SynchronizeRotation = true;
         targetGauchePhotonTransformView.m_UseLocal = true;
         targetGauchePhotonView.ObservedComponents = new List<Component>() { targetGauchePhotonTransformView };
 
-
+        // Photon Voice View Configuration
+        photonVoiceView.SpeakerInUse = speaker;
+        photonVoiceView.UsePrimaryRecorder = true;
+        photonVoiceView.SetupDebugSpeaker = true;
+        audioSource.loop = true;
 
 
         if (IsMyOwnAvatar) // && AvatarStampToCreate.Count == 0

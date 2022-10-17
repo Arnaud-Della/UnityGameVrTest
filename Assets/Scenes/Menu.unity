@@ -1555,7 +1555,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62880f0f4c357374a9b8e906dd838766, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  network: {fileID: 1729800374}
   RoomName: {fileID: 752171184}
   Url: {fileID: 1670954294}
 --- !u!1 &1358686087
