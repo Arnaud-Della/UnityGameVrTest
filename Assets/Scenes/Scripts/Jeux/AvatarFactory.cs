@@ -91,6 +91,10 @@ public class AvatarFactory : MonoBehaviour
         PhotonTransformView targetGauchePhotonTransformView = targetGauche.AddComponent<PhotonTransformView>();
 
 
+        // Photon Animator View
+        PhotonAnimatorView avatarAnimatorView = avatar.AddComponent<PhotonAnimatorView>();
+
+
         //////////////////////////// Declaration des variables /////////////////////////////////
 
 
@@ -150,11 +154,15 @@ public class AvatarFactory : MonoBehaviour
         TeteContrainte.transform.rotation = HumanBones[10].transform.rotation;
 
 
+        // Photon Animator View Configuration
+        avatarAnimatorView.SetParameterSynchronized("Vertical", PhotonAnimatorView.ParameterType.Float, PhotonAnimatorView.SynchronizeType.Continuous);
+        avatarAnimatorView.SetParameterSynchronized("Horizontal", PhotonAnimatorView.ParameterType.Float, PhotonAnimatorView.SynchronizeType.Continuous);
+
         // Main Photon Configuration
         avatarPhotonTransformView.m_SynchronizePosition = true;
         avatarPhotonTransformView.m_SynchronizeRotation = true;
         avatarPhotonTransformView.m_UseLocal = true;
-        AvatarPhotonView.ObservedComponents = new List<Component>() { avatarPhotonTransformView };
+        AvatarPhotonView.ObservedComponents = new List<Component>() { avatarPhotonTransformView, avatarAnimatorView };
 
         // Recurrence Photon Configuration
         tetePhotonTransformView.m_SynchronizePosition = true;
@@ -175,7 +183,7 @@ public class AvatarFactory : MonoBehaviour
 
 
 
-        if (IsMyOwnAvatar)
+        if (IsMyOwnAvatar) // && AvatarStampToCreate.Count == 0
         {
             Debug.LogWarning($"Je cree mon propre Avatar {Url}");
 
