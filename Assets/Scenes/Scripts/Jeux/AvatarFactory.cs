@@ -113,7 +113,7 @@ public class AvatarFactory : MonoBehaviour
         // Avatar
         avatar.name = Guid.NewGuid().ToString();
         avatar.transform.position = InitPosition;
-        avatar.transform.rotation = new Quaternion(0, InitRotation, 0, 0);
+        avatar.transform.rotation = Quaternion.AngleAxis(InitRotation, Vector3.up);
         rigBuilder.layers.Clear();
         rigBuilder.layers.Add(new RigLayer(rigComponent));
         boneRenderer.transforms = GetAllHumanoidBones(animator);
@@ -225,7 +225,7 @@ public class AvatarFactory : MonoBehaviour
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
             ManetteGauche.transform.position = HumanBones[17].transform.position;
-            Casque.transform.rotation = new Quaternion(0, InitRotation, 0, 0);
+            Casque.transform.rotation = Quaternion.AngleAxis(InitRotation, Vector3.up);
             ManetteDroite.transform.rotation = HumanBones[18].transform.rotation;
             ManetteGauche.transform.rotation = HumanBones[17].transform.rotation;
 
