@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using Photon.Voice.PUN;
 using Photon.Voice.Unity;
+using System.Linq;
 
 public class AvatarFactory : MonoBehaviour
 {
@@ -310,7 +311,9 @@ public class AvatarFactory : MonoBehaviour
             targetGauche.transform.rotation = AvatarStampToCreate[0].MainGauche.Rotation;
 
             // Suppression des informations de configuration de cette avatar du buffer
-            AvatarStampToCreate.RemoveAt(0);
+            AvatarStampToCreate.RemoveAt(
+                AvatarStampToCreate.FindIndex(x => x.AvatarUrl == args.Url)
+            );
         }
 
 
