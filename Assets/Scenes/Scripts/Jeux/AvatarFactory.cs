@@ -57,7 +57,7 @@ public class AvatarFactory : MonoBehaviour
         // Avatar
         GameObject avatar = args.Avatar;
         RigBuilder rigBuilder = avatar.AddComponent<RigBuilder>();
-        BoneRenderer boneRenderer = avatar.AddComponent<BoneRenderer>();
+        //BoneRenderer boneRenderer = avatar.AddComponent<BoneRenderer>();
         Animator animator = avatar.GetComponent<Animator>();
 
         // Rig
@@ -117,7 +117,9 @@ public class AvatarFactory : MonoBehaviour
         avatar.transform.rotation = Quaternion.AngleAxis(InitRotation, Vector3.up);
         rigBuilder.layers.Clear();
         rigBuilder.layers.Add(new RigLayer(rigComponent));
-        boneRenderer.transforms = GetAllHumanoidBones(animator);
+        //boneRenderer.transforms = GetAllHumanoidBones(animator);
+        GetAllHumanoidBones(animator);
+        animator.runtimeAnimatorController = ControllerAnimator;
 
 
         // Bras Droit
@@ -320,8 +322,6 @@ public class AvatarFactory : MonoBehaviour
 
 
         // Finalisation de la Creation de l'avatar
-        //animator.avatar = null;
-        animator.runtimeAnimatorController = ControllerAnimator;
         rigBuilder.Build();
 
 
@@ -365,10 +365,10 @@ public class AvatarFactory : MonoBehaviour
         Debug.Log($"Avatar loading failed with error message: {args.Message}");
     }
 
-    private Transform[] GetAllHumanoidBones(Animator _animator)
+    private void GetAllHumanoidBones(Animator _animator)
     {
         HumanBones = new List<Transform>();
-        if (_animator == null) return null;
+        if (_animator == null) return;
 
         foreach (HumanBodyBones bone in Enum.GetValues(typeof(HumanBodyBones)))
         {
@@ -383,7 +383,6 @@ public class AvatarFactory : MonoBehaviour
             }
 
         }
-        return HumanBones.ToArray();
     }
 }
 
