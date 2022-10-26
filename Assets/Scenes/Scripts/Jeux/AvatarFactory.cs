@@ -278,6 +278,11 @@ public class AvatarFactory : MonoBehaviour
 
             // Ajout de l'evenement SyncWithNewPlayer
             Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
+
+            if (AvatarStampToCreate.Count > 0)
+            {
+                CreateNewAvatar(AvatarStampToCreate[0].AvatarUrl);
+            }
         }
         else if (AvatarStampToCreate.Count > 0)
         {
@@ -319,7 +324,11 @@ public class AvatarFactory : MonoBehaviour
     {
         AvatarConfiguration conf = JsonConvert.DeserializeObject<AvatarConfiguration>(stringConf);
         AvatarStampToCreate.Add(conf);
-        CreateNewAvatar(conf.AvatarUrl);
+
+        if (!IsMyOwnAvatar)
+        {
+            CreateNewAvatar(conf.AvatarUrl);
+        }
     }
 
     public void SyncWithNewPlayer(object sender, EventPlayer args)
