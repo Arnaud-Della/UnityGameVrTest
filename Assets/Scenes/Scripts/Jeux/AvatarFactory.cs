@@ -292,31 +292,30 @@ public class AvatarFactory : MonoBehaviour
         }
         else if (AvatarStampToCreate.Count > 0)
         {
+            // Recuperation de l'index
+            int index = AvatarStampToCreate.FindIndex(x => x.AvatarUrl == args.Url);
+
             // Attribution du ViewID et de la position à l'avatar adverse 
-            AvatarPhotonView.ViewID = AvatarStampToCreate[0].Avatar.ViewID;
-            avatar.transform.position = AvatarStampToCreate[0].Avatar.Position;
-            avatar.transform.rotation = AvatarStampToCreate[0].Avatar.Rotation;
+            AvatarPhotonView.ViewID = AvatarStampToCreate[index].Avatar.ViewID;
+            avatar.transform.position = AvatarStampToCreate[index].Avatar.Position;
+            avatar.transform.rotation = AvatarStampToCreate[index].Avatar.Rotation;
             // Attribution du ViewID et de la position à la tete adverse
             tetePhotonView.ViewID = AvatarStampToCreate[0].Tete.ViewID;
-            TeteContrainte.transform.position = AvatarStampToCreate[0].Tete.Position;
-            TeteContrainte.transform.rotation = AvatarStampToCreate[0].Tete.Rotation;
+            TeteContrainte.transform.position = AvatarStampToCreate[index].Tete.Position;
+            TeteContrainte.transform.rotation = AvatarStampToCreate[index].Tete.Rotation;
             // Attribution du ViewID et de la position aux mains adverse
             // Target Droit
-            targetDroitPhotonView.ViewID = AvatarStampToCreate[0].MainDroite.ViewID;
-            targetDroit.transform.position = AvatarStampToCreate[0].MainDroite.Position;
-            targetDroit.transform.rotation = AvatarStampToCreate[0].MainDroite.Rotation;
+            targetDroitPhotonView.ViewID = AvatarStampToCreate[index].MainDroite.ViewID;
+            targetDroit.transform.position = AvatarStampToCreate[index].MainDroite.Position;
+            targetDroit.transform.rotation = AvatarStampToCreate[index].MainDroite.Rotation;
             // Target Gauche
-            targetGauchePhotonView.ViewID = AvatarStampToCreate[0].MainGauche.ViewID;
-            targetGauche.transform.position = AvatarStampToCreate[0].MainGauche.Position;
-            targetGauche.transform.rotation = AvatarStampToCreate[0].MainGauche.Rotation;
+            targetGauchePhotonView.ViewID = AvatarStampToCreate[index].MainGauche.ViewID;
+            targetGauche.transform.position = AvatarStampToCreate[index].MainGauche.Position;
+            targetGauche.transform.rotation = AvatarStampToCreate[index].MainGauche.Rotation;
 
             // Suppression des informations de configuration de cette avatar du buffer
             //AvatarStampToCreate.RemoveAt(0);
-            Debug.Log(args.Url);
-            Debug.Log(AvatarStampToCreate.FindIndex(x => x.AvatarUrl == args.Url));
-            AvatarStampToCreate.RemoveAt(
-                AvatarStampToCreate.FindIndex(x => x.AvatarUrl == args.Url)
-            );
+            AvatarStampToCreate.RemoveAt(index);
         }
 
 
