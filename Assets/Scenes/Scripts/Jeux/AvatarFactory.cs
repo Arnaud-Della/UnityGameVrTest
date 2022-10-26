@@ -281,7 +281,10 @@ public class AvatarFactory : MonoBehaviour
 
             if (AvatarStampToCreate.Count > 0)
             {
-                CreateNewAvatar(AvatarStampToCreate[0].AvatarUrl);
+                for(int i=0; i<AvatarStampToCreate.Count; i++)
+                {
+                    CreateNewAvatar(AvatarStampToCreate[i].AvatarUrl);
+                }
             }
         }
         else if (AvatarStampToCreate.Count > 0)
