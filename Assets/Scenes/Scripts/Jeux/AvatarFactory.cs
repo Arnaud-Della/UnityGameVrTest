@@ -276,9 +276,8 @@ public class AvatarFactory : MonoBehaviour
             
             photonView.RPC("Sync", RpcTarget.Others, JsonConvert.SerializeObject(conf));
 
-            // Ajout de l'evenement SyncWithNewPlayer
-            Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
 
+            // Creation de Tout les avatars adverse deja sur le terrain
             if (AvatarStampToCreate.Count > 0)
             {
                 for(int i=0; i<AvatarStampToCreate.Count; i++)
@@ -286,6 +285,9 @@ public class AvatarFactory : MonoBehaviour
                     CreateNewAvatar(AvatarStampToCreate[i].AvatarUrl);
                 }
             }
+
+            // Ajout de l'evenement SyncWithNewPlayer
+            Network.OnPlayerEnteredRoomEventHandler += SyncWithNewPlayer;
         }
         else if (AvatarStampToCreate.Count > 0)
         {
