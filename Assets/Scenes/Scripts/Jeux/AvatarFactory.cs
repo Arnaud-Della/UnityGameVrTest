@@ -224,6 +224,9 @@ public class AvatarFactory : MonoBehaviour
         {
             Debug.LogWarning($"Je cree mon propre Avatar {Url}");
 
+            /*Casque = Instantiate(Casque);
+            ManetteDroite = Instantiate(ManetteDroite);
+            ManetteGauche = Instantiate(ManetteGauche);*/
             // Aligne transform du Casque et des Manettes du VR avec l'avatar
             Casque.transform.position = HumanBones[10].transform.position;
             ManetteDroite.transform.position = HumanBones[18].transform.position;
